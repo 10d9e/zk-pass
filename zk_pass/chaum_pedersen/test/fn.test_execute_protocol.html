@@ -29,7 +29,7 @@ of <code>true</code> means that the client successfully proved knowledge of the 
 without revealing it, while <code>false</code> indicates a failure in the protocol execution.</p>
 <h2 id="example"><a href="#example">Example</a></h2>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Assume `DiscreteLogChaumPedersen` implements `ChaumPedersen`.
-</span><span class="kw">use </span>zk_pass::chaum_pedersen::test::execute_protocol;
+</span><span class="kw">use </span>zk_pass::chaum_pedersen::test::test_execute_protocol;
 <span class="kw">use </span>zk_pass::chaum_pedersen::discretelog::DiscreteLogChaumPedersen;
 <span class="kw">use </span>zk_pass::chaum_pedersen::constants::RFC5114_MODP_2048_256_BIT_PARAMS;
 <span class="kw">use </span>rand::rngs::OsRng;
