@@ -124,6 +124,7 @@ mod tests {
         RFC5114_MODP_2048_256_BIT_PARAMS,
     };
     use crate::chaum_pedersen::test::test_execute_protocol;
+    use crate::rand::RandomGenerator;
 
     #[test]
     fn test_discrete_log_commitment() {
@@ -188,6 +189,45 @@ mod tests {
         let mut rng = OsRng;
         let x = rng.gen_biguint_below(&params.p);
         assert!(test_execute_protocol::<DiscreteLogChaumPedersen>(&params, &x));
+    }
+
+    #[test]
+    fn test_fail_rfc_1024_160_bits_params() {
+        let params = RFC5114_MODP_1024_160_BIT_PARAMS.to_owned();
+        let mut rng = OsRng;
+        let x = rng.gen_biguint_below(&params.p);
+        
+        let (cp, _) = DiscreteLogChaumPedersen::commitment(&params, &x);
+        let c = DiscreteLogChaumPedersen::challenge(&params);
+        let fake_response = BigUint::generate_random().unwrap();
+        let verified = DiscreteLogChaumPedersen::verify(&params, &fake_response, &c, &cp);
+        assert!(!verified);
+    }
+
+    #[test]
+    fn test_fail_rfc_2048_224_bits_params() {
+        let params = RFC5114_MODP_2048_224_BIT_PARAMS.to_owned();
+        let mut rng = OsRng;
+        let x = rng.gen_biguint_below(&params.p);
+        
+        let (cp, _) = DiscreteLogChaumPedersen::commitment(&params, &x);
+        let c = DiscreteLogChaumPedersen::challenge(&params);
+        let fake_response = BigUint::generate_random().unwrap();
+        let verified = DiscreteLogChaumPedersen::verify(&params, &fake_response, &c, &cp);
+        assert!(!verified);
+    }
+
+    #[test]
+    fn test_fail_rfc_2048_256_bits_params() {
+        let params = RFC5114_MODP_2048_256_BIT_PARAMS.to_owned();
+        let mut rng = OsRng;
+        let x = rng.gen_biguint_below(&params.p);
+        
+        let (cp, _) = DiscreteLogChaumPedersen::commitment(&params, &x);
+        let c = DiscreteLogChaumPedersen::challenge(&params);
+        let fake_response = BigUint::generate_random().unwrap();
+        let verified = DiscreteLogChaumPedersen::verify(&params, &fake_response, &c, &cp);
+        assert!(!verified);
     }
 
     #[test]

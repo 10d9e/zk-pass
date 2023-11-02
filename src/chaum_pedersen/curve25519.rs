@@ -124,9 +124,11 @@ impl ChaumPedersen for EllipticCurveChaumPedersen {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::chaum_pedersen::constants::EC25519_GROUP_PARAMS;
     use crate::chaum_pedersen::test::test_execute_protocol;
     use curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
     use curve25519_dalek::ristretto::CompressedRistretto;
+    use crate::rand::RandomGenerator;
 
     fn serialize_ristretto_point(point: &RistrettoPoint) -> String {
         // Compress the RistrettoPoint
@@ -175,7 +177,7 @@ mod test {
 
     /// Tests the verification process in the Elliptic Curve Chaum-Pedersen protocol.
     #[test]
-    fn test_elliptic_curve_verification() {
+    fn test_elliptic_curve_random_point_verification() {
         // Initializing random number generator.
         let mut rng = OsRng;
         // Creating a secret value x.
@@ -194,6 +196,47 @@ mod test {
 
         // Executing the protocol and asserting the verification is successful.
         assert!(test_execute_protocol::<EllipticCurveChaumPedersen>(&params, &x));
+    }
+
+    #[test]
+    fn test_elliptic_curve_standard_verification() {
+        // Initializing random number generator.
+        // Creating a secret value x.
+        let x = Scalar::from(3u32);
+        // Setting up the group parameters.
+        let params = EC25519_GROUP_PARAMS.to_owned();
+
+        // Executing the protocol and asserting the verification is successful.
+        assert!(test_execute_protocol::<EllipticCurveChaumPedersen>(&params, &x));
+    }
+
+    #[test]
+    fn test_fail_elliptic_curve_verification() {
+        let mut rng = OsRng;
+        // Setting up the group parameters.
+        let params = EC25519_GROUP_PARAMS.to_owned();
+        let x = Scalar::random(&mut rng);
+        
+        let (cp, _) = EllipticCurveChaumPedersen::commitment(&params, &x);
+        let c = EllipticCurveChaumPedersen::challenge(&params);
+        let fake_response = Scalar::generate_random().unwrap();
+        let verified = EllipticCurveChaumPedersen::verify(&params, &fake_response, &c, &cp);
+        assert!(!verified);
+    }
+
+    #[test]
+    fn test_fail_elliptic_curve_verification_with_ec_params() {
+        let mut rng = OsRng;
+        // Setting up the group parameters.
+        let params = EC25519_GROUP_PARAMS.to_owned();
+        // Creating a secret value x.
+        let x = Scalar::random(&mut rng);
+        
+        let (cp, _) = EllipticCurveChaumPedersen::commitment(&params, &x);
+        let c = EllipticCurveChaumPedersen::challenge(&params);
+        let fake_response = Scalar::generate_random().unwrap();
+        let verified = EllipticCurveChaumPedersen::verify(&params, &fake_response, &c, &cp);
+        assert!(!verified);
     }
 
     /// Tests the serialization and deserialization of Ristretto points, simulating sending over a wire.

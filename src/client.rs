@@ -4,6 +4,7 @@ use tonic::transport::Channel;
 use crate::chaum_pedersen::GroupParams;
 use crate::chaum_pedersen::ChaumPedersen;
 use crate::conversion::ByteConvertible;
+use crate::rand::RandomGenerator;
 use std::error::Error;
 
 /// A module that contains the auto-generated gRPC code for the Zero-Knowledge Proof (ZKP) authentication service.
@@ -128,8 +129,8 @@ where
         Response = S,
         Challenge = S,
     >,
-    P: ByteConvertible<P>,
-    S: ByteConvertible<S>,
+    P: ByteConvertible<P> + RandomGenerator<P>,
+    S: ByteConvertible<S> + RandomGenerator<S>,
 {
     // Client calculates the commitment.
     let ((y1, y2, r1, r2), k) = T::commitment(params, x);

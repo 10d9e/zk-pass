@@ -1,3 +1,4 @@
+
 use crate::chaum_pedersen::curve25519::EllipticCurveChaumPedersen;
 use crate::conversion::ByteConvertible;
 use crate::repository::daoimpl::InMemoryUserDao;

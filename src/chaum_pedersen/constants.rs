@@ -63,24 +63,21 @@ lazy_static! {
         params
     };
 
-    // Defining `EC25519_BASEPOINT_POINT_G` as a lazy static variable. This variable represents a base point on the elliptic curve Curve25519, specifically for the Ristretto group.
-    pub static ref EC25519_BASEPOINT_POINT_G: RistrettoPoint = {
-        // Creating the base point 'G' from its byte representation, decoded from the hexadecimal string.
-        // The unwrap() method is called to handle the Result type, assuming the input is always valid.
-        RistrettoPoint::from_bytes(
-            &hex::decode("2aea1fc8034016ac0e9be8c357421a6a3afba883fd10d0f842f4ef6df6fb347a").unwrap()
-        )
-        .unwrap() // Unwrap is called again to handle the Option type, assuming the decoded bytes represent a valid point.
-    };
-
-    // Defining `EC25519_BASEPOINT_POINT_H` as a lazy static variable. This variable represents another distinct point on the elliptic curve Curve25519, specifically for the Ristretto group.
-    pub static ref EC25519_BASEPOINT_POINT_H: RistrettoPoint = {
-        // Creating the base point 'H' from its byte representation, decoded from the hexadecimal string.
-        // Similar to the previous definition, unwrap() is used to handle the Result and Option types.
-        RistrettoPoint::from_bytes(
-            &hex::decode("ae0855e254e43f00ad816c82b3a801f9995fe0717c826eb776b7a29f13e04c78").unwrap()
-        )
-        .unwrap() // Unwrap is called again to ensure the decoded bytes represent a valid point.
+    // Defining `EC25519_GROUP_PARAMS` as a lazy static variable. This variable represents the group parameters for the elliptic curve Curve25519, specifically for the Ristretto group.
+    pub static ref EC25519_GROUP_PARAMS: GroupParams<RistrettoPoint> = {
+        let params = GroupParams::<RistrettoPoint> {
+            g: RistrettoPoint::from_bytes(
+                &hex::decode("2aea1fc8034016ac0e9be8c357421a6a3afba883fd10d0f842f4ef6df6fb347a").unwrap()
+            )
+            .unwrap().to_owned(),
+            h: RistrettoPoint::from_bytes(
+                &hex::decode("ae0855e254e43f00ad816c82b3a801f9995fe0717c826eb776b7a29f13e04c78").unwrap()
+            )
+            .unwrap().to_owned(),
+            p: RISTRETTO_BASEPOINT_POINT.to_owned(),
+            q: RISTRETTO_BASEPOINT_POINT.to_owned(),
+        };
+        params
     };
 
 }
@@ -109,12 +106,7 @@ impl FromStr for GroupParams<RistrettoPoint> {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             // Matching the string "ec25519" and returning the corresponding group parameters.
-            "ec25519" => Ok(GroupParams {
-                g: EC25519_BASEPOINT_POINT_G.to_owned(),
-                h: EC25519_BASEPOINT_POINT_H.to_owned(),
-                p: RISTRETTO_BASEPOINT_POINT.to_owned(),
-                q: RISTRETTO_BASEPOINT_POINT.to_owned(),
-            }),
+            "ec25519" => Ok(EC25519_GROUP_PARAMS.to_owned()),
             _ => Err(()), // Returning an error for unrecognized strings.
         }
     }
