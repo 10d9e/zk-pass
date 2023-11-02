@@ -1,4 +1,3 @@
-// Importing necessary modules from the `tonic` crate.
 use tonic::codegen::StdError;
 use tonic::transport::Channel;
 

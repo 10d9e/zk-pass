@@ -1,4 +1,3 @@
-// Importing necessary modules and traits.
 use curve25519_dalek::ristretto::CompressedRistretto;
 use curve25519_dalek::{RistrettoPoint, Scalar};
 use log::error;
