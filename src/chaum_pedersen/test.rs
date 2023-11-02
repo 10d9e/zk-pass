@@ -30,7 +30,7 @@ use crate::chaum_pedersen::ChaumPedersen;
 /// # Example
 /// ```
 /// // Assume `DiscreteLogChaumPedersen` implements `ChaumPedersen`.
-/// use zk_pass::chaum_pedersen::test::execute_protocol;
+/// use zk_pass::chaum_pedersen::test::test_execute_protocol;
 /// use zk_pass::chaum_pedersen::discretelog::DiscreteLogChaumPedersen;
 /// use zk_pass::chaum_pedersen::constants::RFC5114_MODP_2048_256_BIT_PARAMS;
 /// use rand::rngs::OsRng;
