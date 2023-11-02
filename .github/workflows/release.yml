@@ -1,4 +1,4 @@
-name: Release
+name: release
 
 # This workflow is triggered when a new tag is pushed to the repository.
 # To create a new release, follow these steps:
