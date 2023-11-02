@@ -273,8 +273,6 @@
 <a href="#273" id="273">273</a>
 <a href="#274" id="274">274</a>
 <a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>curve25519_dalek::{RistrettoPoint, Scalar};
 <span class="kw">use </span>num_bigint::BigUint;
 <span class="kw">use </span>sha2::{Digest, Sha512};
@@ -438,7 +436,7 @@
         })<span class="question-mark">?</span>;
 
     <span class="comment">// Displays initial client information.
-    </span><span class="macro">println!</span>(<span class="string">&quot;🔥 Starting ZK_PASS server 🔥&quot;</span>);
+    </span><span class="macro">println!</span>(<span class="string">&quot;🔥 Starting ZK_PASS client 🔥&quot;</span>);
     <span class="macro">println!</span>(<span class="string">&quot;      🤖 host: {}&quot;</span>, opt.host);
     <span class="macro">println!</span>(<span class="string">&quot;      🔌 port: {}&quot;</span>, opt.port);
     <span class="macro">println!</span>(<span class="string">&quot;      💥 stereotype: {}&quot;</span>, opt.r#type);
@@ -449,8 +447,6 @@
     }
 
     <span class="kw">let </span>x = hash_or_randomize_secret(opt.secret.as_ref()); <span class="comment">// Generates a secret value for the protocol.
-
-    </span><span class="macro">println!</span>(<span class="string">&quot;🔑 secret: {}&quot;</span>, x); <span class="comment">// Displays the secret value.
 
     // Establishes a connection to the ZKPass server.
     </span><span class="kw">let </span><span class="kw-2">mut </span>client = AuthClientLib::connect(<span class="macro">format!</span>(<span class="string">&quot;http://{}:{}&quot;</span>, opt.host, opt.port)).<span class="kw">await</span><span class="question-mark">?</span>;
