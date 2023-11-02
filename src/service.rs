@@ -1,20 +1,16 @@
-
 use crate::chaum_pedersen::curve25519::EllipticCurveChaumPedersen;
 use crate::conversion::ByteConvertible;
 use crate::repository::daoimpl::InMemoryUserDao;
 use curve25519_dalek::RistrettoPoint;
 use curve25519_dalek::Scalar;
+use log::{debug, error, info, trace};
 use num_bigint::BigUint;
 use std::sync::Mutex;
 use tonic::{Request, Response, Status};
 use uuid::Uuid;
-use log::{debug, error, trace, info};
 
 use crate::{
-    chaum_pedersen::{
-        discretelog::DiscreteLogChaumPedersen,
-        ChaumPedersen, GroupParams,
-    },
+    chaum_pedersen::{discretelog::DiscreteLogChaumPedersen, ChaumPedersen, GroupParams},
     repository::{dao::UserDao, models::User, session::update_session},
 };
 

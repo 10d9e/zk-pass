@@ -1,15 +1,15 @@
+use curve25519_dalek::RistrettoPoint;
+use num_bigint::BigUint;
+use std::str::FromStr;
 use structopt::StructOpt;
 use strum::VariantNames;
 use tonic::transport::Server;
+use zk_pass::chaum_pedersen::curve25519::EllipticCurveChaumPedersen;
+use zk_pass::chaum_pedersen::discretelog::DiscreteLogChaumPedersen;
+use zk_pass::chaum_pedersen::GroupParams;
 use zk_pass::cmdutil::{ChaumPedersenType, EllipticCurveType, RfcModpType};
 use zk_pass::service::zkp_auth::auth_server::AuthServer;
 use zk_pass::service::ZkAuth;
-use zk_pass::chaum_pedersen::discretelog::DiscreteLogChaumPedersen;
-use zk_pass::chaum_pedersen::curve25519::EllipticCurveChaumPedersen;
-use curve25519_dalek::RistrettoPoint;
-use zk_pass::chaum_pedersen::GroupParams;
-use num_bigint::BigUint;
-use std::str::FromStr;
 
 /// Struct representing command line options for the server.
 #[derive(StructOpt, Debug)]
@@ -93,7 +93,14 @@ struct Opt {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Parse command line arguments using struct destructuring.
-    let Opt { host, port, r#type: stereotype, curve, modp, .. } = Opt::from_args();
+    let Opt {
+        host,
+        port,
+        r#type: stereotype,
+        curve,
+        modp,
+        ..
+    } = Opt::from_args();
 
     // Print server start information.
     println!("🔥 Starting ZK_PASS server 🔥");
@@ -112,22 +119,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Initialize and start the server based on stereotype.
     match stereotype {
-        
         ChaumPedersenType::DiscreteLog => {
             let params = GroupParams::<BigUint>::from_str(&modp.to_string()).map_err(|_| {
-                "Invalid discrete log group parameters provided in command-line arguments".to_string()
+                "Invalid discrete log group parameters provided in command-line arguments"
+                    .to_string()
             })?;
-            let auth = ZkAuth::<DiscreteLogChaumPedersen, _, _>::new_discrete_log_chaum_pedersen(params);
+            let auth =
+                ZkAuth::<DiscreteLogChaumPedersen, _, _>::new_discrete_log_chaum_pedersen(params);
             Server::builder()
                 .add_service(AuthServer::new(auth))
                 .serve(addr)
                 .await?;
         }
         ChaumPedersenType::EllipticCurve => {
-            let params = GroupParams::<RistrettoPoint>::from_str(&curve.to_string()).map_err(|_| {
-                "Invalid elliptic curve group parameters provided in command-line arguments".to_string()
-            })?;
-            let auth = ZkAuth::<EllipticCurveChaumPedersen, _, _>::new_elliptic_curve_chaum_pedersen(params);
+            let params =
+                GroupParams::<RistrettoPoint>::from_str(&curve.to_string()).map_err(|_| {
+                    "Invalid elliptic curve group parameters provided in command-line arguments"
+                        .to_string()
+                })?;
+            let auth =
+                ZkAuth::<EllipticCurveChaumPedersen, _, _>::new_elliptic_curve_chaum_pedersen(
+                    params,
+                );
             Server::builder()
                 .add_service(AuthServer::new(auth))
                 .serve(addr)

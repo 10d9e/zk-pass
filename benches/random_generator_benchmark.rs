@@ -1,8 +1,8 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use curve25519_dalek::RistrettoPoint;
+use curve25519_dalek::Scalar;
 use num_bigint::BigUint;
 use zk_pass::rand::RandomGenerator;
-use curve25519_dalek::Scalar;
-use curve25519_dalek::RistrettoPoint;
 
 fn bench_biguint_random_generation(c: &mut Criterion) {
     c.bench_function("BigUint Random Generation", |b| {

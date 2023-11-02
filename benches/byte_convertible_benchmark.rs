@@ -1,11 +1,11 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use num_bigint::BigUint;
-use zk_pass::conversion::ByteConvertible;
-use curve25519_dalek::Scalar;
-use curve25519_dalek::RistrettoPoint;
 use curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
+use curve25519_dalek::RistrettoPoint;
+use curve25519_dalek::Scalar;
+use num_bigint::BigUint;
 use num_bigint::ToBigUint;
 use rand::rngs::OsRng;
+use zk_pass::conversion::ByteConvertible;
 
 fn bench_biguint_serialization(c: &mut Criterion) {
     let biguint = 123456789u64.to_biguint().unwrap();

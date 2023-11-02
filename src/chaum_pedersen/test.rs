@@ -35,7 +35,7 @@ use crate::chaum_pedersen::ChaumPedersen;
 /// use zk_pass::chaum_pedersen::constants::RFC5114_MODP_2048_256_BIT_PARAMS;
 /// use rand::rngs::OsRng;
 /// use num_bigint::RandBigInt;
-/// 
+///
 /// let params = RFC5114_MODP_2048_256_BIT_PARAMS.to_owned();
 /// let mut rng = OsRng;
 /// let secret = rng.gen_biguint_below(&params.p);

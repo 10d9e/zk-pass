@@ -1,8 +1,8 @@
 use tonic::codegen::StdError;
 use tonic::transport::Channel;
 
-use crate::chaum_pedersen::GroupParams;
 use crate::chaum_pedersen::ChaumPedersen;
+use crate::chaum_pedersen::GroupParams;
 use crate::conversion::ByteConvertible;
 use crate::rand::RandomGenerator;
 use std::error::Error;

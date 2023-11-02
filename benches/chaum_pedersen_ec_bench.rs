@@ -1,10 +1,10 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use curve25519_dalek::{constants::RISTRETTO_BASEPOINT_POINT, scalar::Scalar};
-use zk_pass::chaum_pedersen::GroupParams;
 use curve25519_dalek::RistrettoPoint;
+use curve25519_dalek::{constants::RISTRETTO_BASEPOINT_POINT, scalar::Scalar};
+use rand::rngs::OsRng;
 use zk_pass::chaum_pedersen::curve25519::EllipticCurveChaumPedersen;
 use zk_pass::chaum_pedersen::ChaumPedersen;
-use rand::rngs::OsRng;
+use zk_pass::chaum_pedersen::GroupParams;
 
 pub fn elliptic_curve_commitment_benchmark(c: &mut Criterion) {
     c.bench_function("elliptic_curve_commitment", |b| {

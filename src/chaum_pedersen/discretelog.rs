@@ -114,7 +114,6 @@ impl ChaumPedersen for DiscreteLogChaumPedersen {
 
         lhs1 == rhs1 && lhs2 == rhs2
     }
-
 }
 
 #[cfg(test)]
@@ -197,7 +196,7 @@ mod tests {
         let params = RFC5114_MODP_1024_160_BIT_PARAMS.to_owned();
         let mut rng = OsRng;
         let x = rng.gen_biguint_below(&params.p);
-        
+
         let (cp, _) = DiscreteLogChaumPedersen::commitment(&params, &x);
         let c = DiscreteLogChaumPedersen::challenge(&params);
         let fake_response = BigUint::generate_random().unwrap();
@@ -210,7 +209,7 @@ mod tests {
         let params = RFC5114_MODP_2048_224_BIT_PARAMS.to_owned();
         let mut rng = OsRng;
         let x = rng.gen_biguint_below(&params.p);
-        
+
         let (cp, _) = DiscreteLogChaumPedersen::commitment(&params, &x);
         let c = DiscreteLogChaumPedersen::challenge(&params);
         let fake_response = BigUint::generate_random().unwrap();
@@ -223,7 +222,7 @@ mod tests {
         let params = RFC5114_MODP_2048_256_BIT_PARAMS.to_owned();
         let mut rng = OsRng;
         let x = rng.gen_biguint_below(&params.p);
-        
+
         let (cp, _) = DiscreteLogChaumPedersen::commitment(&params, &x);
         let c = DiscreteLogChaumPedersen::challenge(&params);
         let fake_response = BigUint::generate_random().unwrap();

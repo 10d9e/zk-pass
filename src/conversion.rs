@@ -27,7 +27,9 @@ pub trait ByteConvertible<T> {
     /// # Returns
     /// A `Result` which is `Ok` containing the constructed object if successful,
     /// or an `Err` containing an error if the conversion failed.
-    fn from_bytes(bytes: &[u8]) -> Result<T, Box<dyn Error>> where Self: Sized;
+    fn from_bytes(bytes: &[u8]) -> Result<T, Box<dyn Error>>
+    where
+        Self: Sized;
 }
 
 /// Implementation of `ByteConvertible` for `BigUint`.

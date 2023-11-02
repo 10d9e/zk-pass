@@ -162,7 +162,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         println!("      🔢 modp group: {}", opt.modp)
     }
     println!("      🔑 user: {}", opt.user);
-    
+
     // Establishes a connection to the ZKPass server.
     let mut client = AuthClientLib::connect(format!("http://{}:{}", opt.host, opt.port)).await?;
 
@@ -171,9 +171,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
         ChaumPedersenType::DiscreteLog => {
             // Executes the discrete log version of the protocol
             // Parses group parameters for Discrete Log and Elliptic Curve implementations.
-            let dl_params = GroupParams::<BigUint>::from_str(&opt.modp.to_string()).map_err(|_| {
-                "Invalid discrete log group parameters provided in command-line arguments".to_string()
-            })?;
+            let dl_params =
+                GroupParams::<BigUint>::from_str(&opt.modp.to_string()).map_err(|_| {
+                    "Invalid discrete log group parameters provided in command-line arguments"
+                        .to_string()
+                })?;
 
             execute_protocol::<DiscreteLogChaumPedersen, _, _>(
                 &dl_params,
@@ -185,9 +187,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
         ChaumPedersenType::EllipticCurve => {
             // Executes the elliptic curve version of the protocol
-            let ec_params = GroupParams::<RistrettoPoint>::from_str(&opt.curve.to_string()).map_err(|_| {
-                "Invalid elliptic curve group parameters provided in command-line arguments".to_string()
-            })?;
+            let ec_params = GroupParams::<RistrettoPoint>::from_str(&opt.curve.to_string())
+                .map_err(|_| {
+                    "Invalid elliptic curve group parameters provided in command-line arguments"
+                        .to_string()
+                })?;
 
             execute_protocol::<EllipticCurveChaumPedersen, _, _>(
                 &ec_params,

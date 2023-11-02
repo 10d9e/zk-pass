@@ -125,9 +125,9 @@ mod test {
     use super::*;
     use crate::chaum_pedersen::constants::EC25519_GROUP_PARAMS;
     use crate::chaum_pedersen::test::test_execute_protocol;
+    use crate::rand::RandomGenerator;
     use curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
     use curve25519_dalek::ristretto::CompressedRistretto;
-    use crate::rand::RandomGenerator;
 
     fn serialize_ristretto_point(point: &RistrettoPoint) -> String {
         // Compress the RistrettoPoint
@@ -215,7 +215,7 @@ mod test {
         // Setting up the group parameters.
         let params = EC25519_GROUP_PARAMS.to_owned();
         let x = Scalar::random(&mut rng);
-        
+
         let (cp, _) = EllipticCurveChaumPedersen::commitment(&params, &x);
         let c = EllipticCurveChaumPedersen::challenge(&params);
         let fake_response = Scalar::generate_random().unwrap();
@@ -230,7 +230,7 @@ mod test {
         let params = EC25519_GROUP_PARAMS.to_owned();
         // Creating a secret value x.
         let x = Scalar::random(&mut rng);
-        
+
         let (cp, _) = EllipticCurveChaumPedersen::commitment(&params, &x);
         let c = EllipticCurveChaumPedersen::challenge(&params);
         let fake_response = Scalar::generate_random().unwrap();

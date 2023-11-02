@@ -1,9 +1,9 @@
 use curve25519_dalek::RistrettoPoint;
 use curve25519_dalek::Scalar;
 use num_bigint::BigUint;
-use std::error::Error;
-use rand::RngCore;
 use rand::rngs::OsRng;
+use rand::RngCore;
+use std::error::Error;
 
 /// Defines a trait for generating random values of a given type.
 ///
