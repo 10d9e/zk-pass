@@ -20,9 +20,6 @@ RUN cargo build --release
 FROM rust:1.73.0
 COPY --from=builder /app/target/release/server /usr/local/bin
 
-# Install SQLite library
-RUN apt-get update && apt-get install -y libsqlite3-0
-
 # Make port 50051 available to the world outside this container
 EXPOSE 50051
 

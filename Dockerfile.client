@@ -20,8 +20,5 @@ RUN cargo build --release
 FROM rust:1.73.0
 COPY --from=builder /app/target/release/client /usr/local/bin
 
-# Install SQLite library
-RUN apt-get update && apt-get install -y libsqlite3-0
-
 # Run the server program when the container launches
-CMD ["client"]
+CMD ["client", "--host", "server"]
