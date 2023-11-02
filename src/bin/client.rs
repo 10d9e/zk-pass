@@ -161,7 +161,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         })?;
 
     // Displays initial client information.
-    println!("🔥 Starting ZK_PASS server 🔥");
+    println!("🔥 Starting ZK_PASS client 🔥");
     println!("      🤖 host: {}", opt.host);
     println!("      🔌 port: {}", opt.port);
     println!("      💥 stereotype: {}", opt.r#type);
@@ -172,8 +172,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let x = hash_or_randomize_secret(opt.secret.as_ref()); // Generates a secret value for the protocol.
-
-    println!("🔑 secret: {}", x); // Displays the secret value.
 
     // Establishes a connection to the ZKPass server.
     let mut client = AuthClientLib::connect(format!("http://{}:{}", opt.host, opt.port)).await?;
