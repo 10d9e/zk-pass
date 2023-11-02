@@ -1,5 +1,15 @@
 # ZKPass Server
 
+<p align="center">
+  <a href="https://github.com/badges/jlogelin/zk_pass/contributors" alt="Contributors">
+        <img src="https://img.shields.io/github/contributors/jlogelin/zk_pass" /></a>
+  <a href="https://img.shields.io/github/v/release/jlogelin/zk_pass" alt="Contributors">
+        <img src="https://img.shields.io/github/v/release/jlogelin/zk_pass" /></a>
+  <a href="https://github.com/jlogelin/zk_pass/actions" alt="Contributors">
+        <img src="https://img.shields.io/github/actions/workflow/status/jlogelin/zk_pass/rust.yml?branch=main" /></a>
+</p>
+
+
 ## Overview
 The ZKPass server is a command-line application that facilitates the ZKPass Chaum-Pedersen protocol service. It offers support for both Discrete Log and Elliptic Curve implementations of the protocol.
 
