@@ -55,10 +55,6 @@ Note: This table shows a subset of possible combinations focusing on `type`, `cu
    Session ID: 97f6e2e1-19d5-404e-ad03-aa3a96d10fc1
    ```
 
-```bash
-cargo build --release
-```
-
 ## Installation
 Ensure that the ZKPass server application is installed on your system. If it's not already installed, follow the provided installation instructions.
 
