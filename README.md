@@ -5,7 +5,7 @@
 [![license-badge](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 
 ## Overview
-The ZKPass server is a command-line application that facilitates the [ZKPass Chaum-Pedersen protocol](PROTOCOL.md) service. It offers support for both Discrete Log and Elliptic Curve implementations of the protocol.
+The ZKPass server is a command-line application that facilitates a secret verification [Chaum-Pedersen protocol](PROTOCOL.md) service. It offers support for both Discrete Log and Elliptic Curve implementations of the protocol.
 
 The following table shows the possible combinations of client and server configurations:
 
