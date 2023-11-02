@@ -1,0 +1,44 @@
+name: doc
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deloy_docs:
+    name: Generate and deploy documentation
+
+    permissions:
+      contents: write
+      pages: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler libprotobuf-dev
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Generate docs
+        uses: actions-rs/cargo@v1
+        with:
+          command: doc
+          args: --no-deps
+      - name: Prepare for deloyment
+        run: |
+          rm -rf ./docs
+          echo "<meta http-equiv=\"refresh\" content=\"0; url=auth_lib\">" > target/doc/index.html
+          cp -r target/doc ./docs
+      - name: Deploy to GitHub Pages
+        if: success()
+        uses: crazy-max/ghaction-github-pages@v3
+        with:
+          target_branch: gh-pages
+          build_dir: docs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
