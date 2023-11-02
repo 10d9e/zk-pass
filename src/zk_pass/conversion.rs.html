@@ -130,9 +130,8 @@
 <a href="#130" id="130">130</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>curve25519_dalek::ristretto::CompressedRistretto;
 <span class="kw">use </span>curve25519_dalek::{RistrettoPoint, Scalar};
-<span class="kw">use </span>log::error;
 <span class="kw">use </span>num_bigint::BigUint;
-<span class="kw">use </span>std::io::Error;
+<span class="kw">use </span>std::error::Error;
 
 <span class="doccomment">/// A trait for converting types to and from byte representations.
 ///
@@ -158,9 +157,7 @@
     /// # Returns
     /// A `Result` which is `Ok` containing the constructed object if successful,
     /// or an `Err` containing an error if the conversion failed.
-    </span><span class="kw">fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;T, Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt;
-    <span class="kw">where
-        </span><span class="self">Self</span>: Sized;
+    </span><span class="kw">fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;T, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; <span class="kw">where </span><span class="self">Self</span>: Sized;
 }
 
 <span class="doccomment">/// Implementation of `ByteConvertible` for `BigUint`.
@@ -172,7 +169,7 @@
         t.to_bytes_be()
     }
 
-    <span class="kw">fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;BigUint, Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
+    <span class="kw">fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;BigUint, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
         <span class="prelude-val">Ok</span>(BigUint::from_bytes_be(bytes))
     }
 }
@@ -187,17 +184,14 @@
         t.compress().to_bytes().to_vec()
     }
 
-    <span class="kw">fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;RistrettoPoint, Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
-        <span class="kw">match </span>CompressedRistretto::from_slice(bytes)<span class="question-mark">?</span>.decompress() {
-            <span class="prelude-val">Some</span>(p) =&gt; <span class="prelude-val">Ok</span>(p),
-            <span class="prelude-val">None </span>=&gt; {
-                <span class="macro">error!</span>(<span class="string">&quot;Failed to decompress RistrettoPoint&quot;</span>);
-                <span class="prelude-val">Err</span>(Box::new(Error::new(
-                    std::io::ErrorKind::Other,
-                    <span class="string">&quot;Failed to decompress RistrettoPoint&quot;</span>,
-                )))
-            }
-        }
+    <span class="kw">fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;RistrettoPoint, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
+        <span class="kw">let </span>compressed = CompressedRistretto::from_slice(bytes);
+        compressed<span class="question-mark">?</span>.decompress().ok_or_else(|| {
+            Box::new(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                <span class="string">&quot;Failed to decompress RistrettoPoint&quot;</span>,
+            )) <span class="kw">as </span>Box&lt;<span class="kw">dyn </span>Error&gt;
+        })
     }
 }
 
@@ -211,8 +205,14 @@
         t.to_bytes().to_vec()
     }
 
-    <span class="kw">fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;Scalar, Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
-        <span class="prelude-val">Ok</span>(Scalar::from_bytes_mod_order(bytes.try_into()<span class="question-mark">?</span>))
+    <span class="kw">fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;Scalar, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
+        <span class="kw">let </span>array: [u8; <span class="number">32</span>] = bytes.try_into().map_err(|<span class="kw">_</span>| {
+            Box::new(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                <span class="string">&quot;Invalid bytes length for Scalar&quot;</span>,
+            )) <span class="kw">as </span>Box&lt;<span class="kw">dyn </span>Error&gt;
+        })<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(Scalar::from_bytes_mod_order(array))
     }
 }
 

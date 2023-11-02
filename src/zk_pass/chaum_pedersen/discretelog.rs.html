@@ -262,6 +262,7 @@
 <a href="#262" id="262">262</a>
 <a href="#263" id="263">263</a>
 <a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>num_bigint::{BigUint, RandBigInt};
 <span class="kw">use </span>num_traits::One;
 <span class="kw">use </span>rand::rngs::OsRng;
@@ -369,15 +370,16 @@
         params: <span class="kw-2">&amp;</span><span class="self">Self</span>::GroupParameters, s: <span class="kw-2">&amp;</span><span class="self">Self</span>::Response, c: <span class="kw-2">&amp;</span><span class="self">Self</span>::Challenge,
         cp: <span class="kw-2">&amp;</span><span class="self">Self</span>::CommitParameters,
     ) -&gt; bool {
-        <span class="kw">let </span>(y1, y2, r1, r2) = (cp.<span class="number">0</span>.clone(), cp.<span class="number">1</span>.clone(), cp.<span class="number">2</span>.clone(), cp.<span class="number">3</span>.clone());
+        <span class="kw">let </span>(y1, y2, r1, r2) = cp;
 
         <span class="kw">let </span>lhs1 = params.g.modpow(s, <span class="kw-2">&amp;</span>params.p);
-        <span class="kw">let </span>rhs1 = (<span class="kw-2">&amp;</span>r1 * y1.modpow(<span class="kw-2">&amp;</span>(<span class="kw-2">&amp;</span>params.p - c - BigUint::one()), <span class="kw-2">&amp;</span>params.p)) % <span class="kw-2">&amp;</span>params.p;
+        <span class="kw">let </span>rhs1 = (r1 * y1.modpow(<span class="kw-2">&amp;</span>(<span class="kw-2">&amp;</span>params.p - c - BigUint::one()), <span class="kw-2">&amp;</span>params.p)) % <span class="kw-2">&amp;</span>params.p;
         <span class="kw">let </span>lhs2 = params.h.modpow(s, <span class="kw-2">&amp;</span>params.p);
-        <span class="kw">let </span>rhs2 = (<span class="kw-2">&amp;</span>r2 * y2.modpow(<span class="kw-2">&amp;</span>(<span class="kw-2">&amp;</span>params.p - c - BigUint::one()), <span class="kw-2">&amp;</span>params.p)) % <span class="kw-2">&amp;</span>params.p;
+        <span class="kw">let </span>rhs2 = (r2 * y2.modpow(<span class="kw-2">&amp;</span>(<span class="kw-2">&amp;</span>params.p - c - BigUint::one()), <span class="kw-2">&amp;</span>params.p)) % <span class="kw-2">&amp;</span>params.p;
 
         lhs1 == rhs1 &amp;&amp; lhs2 == rhs2
     }
+
 }
 
 <span class="attr">#[cfg(test)]

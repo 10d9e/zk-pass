@@ -65,20 +65,12 @@
 <a href="#65" id="65">65</a>
 <a href="#66" id="66">66</a>
 <a href="#67" id="67">67</a>
-<a href="#68" id="68">68</a>
-<a href="#69" id="69">69</a>
-<a href="#70" id="70">70</a>
-<a href="#71" id="71">71</a>
-<a href="#72" id="72">72</a>
-<a href="#73" id="73">73</a>
-<a href="#74" id="74">74</a>
-<a href="#75" id="75">75</a>
-<a href="#76" id="76">76</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::conversion::ByteConvertible;
-<span class="kw">use </span>curve25519_dalek::RistrettoPoint;
+</pre></div><pre class="rust"><code><span class="kw">use </span>curve25519_dalek::RistrettoPoint;
 <span class="kw">use </span>curve25519_dalek::Scalar;
 <span class="kw">use </span>num_bigint::BigUint;
+<span class="kw">use </span>std::error::Error;
 <span class="kw">use </span>rand::RngCore;
+<span class="kw">use </span>rand::rngs::OsRng;
 
 <span class="doccomment">/// Defines a trait for generating random values of a given type.
 ///
@@ -93,7 +85,7 @@
     ///
     /// # Errors
     /// Returns an error if the random value generation fails.
-    </span><span class="kw">fn </span>generate_random() -&gt; <span class="prelude-ty">Result</span>&lt;T, Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt;;
+    </span><span class="kw">fn </span>generate_random() -&gt; <span class="prelude-ty">Result</span>&lt;T, Box&lt;<span class="kw">dyn </span>Error&gt;&gt;;
 }
 
 <span class="comment">// Implementation of `RandomGenerator` trait for `BigUint`.
@@ -106,14 +98,10 @@
     /// # Errors
     /// Returns an error if the conversion from bytes to `BigUint` fails.
     </span><span class="kw">fn </span>generate_random() -&gt; <span class="prelude-ty">Result</span>&lt;BigUint, Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>rng = rand::thread_rng();
-        <span class="kw">let </span><span class="kw-2">mut </span>bytes = <span class="macro">vec!</span>[<span class="number">0u8</span>; <span class="number">32</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = OsRng;
+        <span class="kw">let </span><span class="kw-2">mut </span>bytes = [<span class="number">0u8</span>; <span class="number">32</span>];
         rng.fill_bytes(<span class="kw-2">&amp;mut </span>bytes);
-
-        <span class="comment">//let mut rng = OsRng;
-        //rng.gen_biguint_below(&amp;params.p)
-
-        </span>BigUint::from_bytes(<span class="kw-2">&amp;</span>bytes)
+        <span class="prelude-val">Ok</span>(BigUint::from_bytes_be(<span class="kw-2">&amp;</span>bytes))
     }
 }
 
@@ -126,11 +114,8 @@
     ///
     /// # Errors
     /// Returns an error if the conversion from bytes to `Scalar` fails.
-    </span><span class="kw">fn </span>generate_random() -&gt; <span class="prelude-ty">Result</span>&lt;Scalar, Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>rng = rand::thread_rng();
-        <span class="kw">let </span><span class="kw-2">mut </span>bytes = <span class="macro">vec!</span>[<span class="number">0u8</span>; <span class="number">32</span>];
-        rng.fill_bytes(<span class="kw-2">&amp;mut </span>bytes);
-        Scalar::from_bytes(<span class="kw-2">&amp;</span>bytes)
+    </span><span class="kw">fn </span>generate_random() -&gt; <span class="prelude-ty">Result</span>&lt;Scalar, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
+        <span class="prelude-val">Ok</span>(Scalar::random(<span class="kw-2">&amp;mut </span>OsRng))
     }
 }
 
@@ -144,10 +129,7 @@
     /// # Errors
     /// Returns an error if the conversion from bytes to `RistrettoPoint` fails.
     </span><span class="kw">fn </span>generate_random() -&gt; <span class="prelude-ty">Result</span>&lt;RistrettoPoint, Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>rng = rand::thread_rng();
-        <span class="kw">let </span><span class="kw-2">mut </span>bytes = <span class="macro">vec!</span>[<span class="number">0u8</span>; <span class="number">32</span>];
-        rng.fill_bytes(<span class="kw-2">&amp;mut </span>bytes);
-        RistrettoPoint::from_bytes(<span class="kw-2">&amp;</span>bytes)
+        <span class="prelude-val">Ok</span>(RistrettoPoint::random(<span class="kw-2">&amp;mut </span>OsRng))
     }
 }
 </code></pre></div></section></main></body></html>

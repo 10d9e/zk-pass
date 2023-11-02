@@ -266,9 +266,6 @@
 <a href="#266" id="266">266</a>
 <a href="#267" id="267">267</a>
 <a href="#268" id="268">268</a>
-<a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::chaum_pedersen::{ChaumPedersen, GroupParams};
 <span class="kw">use </span>curve25519_dalek::scalar::Scalar;
 <span class="kw">use </span>curve25519_dalek::RistrettoPoint;
@@ -385,8 +382,7 @@
         cp: <span class="kw-2">&amp;</span><span class="self">Self</span>::CommitParameters,
     ) -&gt; bool {
         <span class="comment">// Deconstructing the commitment parameters tuple.
-        </span><span class="kw">let </span>(y1, y2, r1, r2) = (cp.<span class="number">0</span>.clone(), cp.<span class="number">1</span>.clone(), cp.<span class="number">2</span>.clone(), cp.<span class="number">3</span>.clone());
-
+        </span><span class="kw">let </span>(y1, y2, r1, r2) = cp;
         <span class="comment">// Verifying the proof by checking two equations.
         </span>(params.g * s == r1 + (y1 * c)) &amp;&amp; (params.h * s == r2 + (y2 * c))
     }
@@ -533,8 +529,6 @@
             .unwrap()
             .decompress()
             .expect(<span class="string">&quot;Invalid point received&quot;</span>);
-
-        <span class="macro">println!</span>(<span class="string">&quot;Received point: {:?}&quot;</span>, received_point);
 
         <span class="comment">// Asserting that the received point is equal to the original compressed point.
         </span><span class="macro">assert_eq!</span>(received_point, compressed_point);
