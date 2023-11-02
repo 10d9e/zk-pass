@@ -226,6 +226,49 @@
 <a href="#226" id="226">226</a>
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::chaum_pedersen::{ChaumPedersen, GroupParams};
 <span class="kw">use </span>curve25519_dalek::scalar::Scalar;
 <span class="kw">use </span>curve25519_dalek::RistrettoPoint;
@@ -352,9 +395,11 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::chaum_pedersen::constants::EC25519_GROUP_PARAMS;
     <span class="kw">use </span><span class="kw">crate</span>::chaum_pedersen::test::test_execute_protocol;
     <span class="kw">use </span>curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
     <span class="kw">use </span>curve25519_dalek::ristretto::CompressedRistretto;
+    <span class="kw">use </span><span class="kw">crate</span>::rand::RandomGenerator;
 
     <span class="kw">fn </span>serialize_ristretto_point(point: <span class="kw-2">&amp;</span>RistrettoPoint) -&gt; String {
         <span class="comment">// Compress the RistrettoPoint
@@ -403,7 +448,7 @@
 
     <span class="doccomment">/// Tests the verification process in the Elliptic Curve Chaum-Pedersen protocol.
     </span><span class="attr">#[test]
-    </span><span class="kw">fn </span>test_elliptic_curve_verification() {
+    </span><span class="kw">fn </span>test_elliptic_curve_random_point_verification() {
         <span class="comment">// Initializing random number generator.
         </span><span class="kw">let </span><span class="kw-2">mut </span>rng = OsRng;
         <span class="comment">// Creating a secret value x.
@@ -422,6 +467,47 @@
 
         <span class="comment">// Executing the protocol and asserting the verification is successful.
         </span><span class="macro">assert!</span>(test_execute_protocol::&lt;EllipticCurveChaumPedersen&gt;(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x));
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_elliptic_curve_standard_verification() {
+        <span class="comment">// Initializing random number generator.
+        // Creating a secret value x.
+        </span><span class="kw">let </span>x = Scalar::from(<span class="number">3u32</span>);
+        <span class="comment">// Setting up the group parameters.
+        </span><span class="kw">let </span>params = EC25519_GROUP_PARAMS.to_owned();
+
+        <span class="comment">// Executing the protocol and asserting the verification is successful.
+        </span><span class="macro">assert!</span>(test_execute_protocol::&lt;EllipticCurveChaumPedersen&gt;(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x));
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_fail_elliptic_curve_verification() {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = OsRng;
+        <span class="comment">// Setting up the group parameters.
+        </span><span class="kw">let </span>params = EC25519_GROUP_PARAMS.to_owned();
+        <span class="kw">let </span>x = Scalar::random(<span class="kw-2">&amp;mut </span>rng);
+        
+        <span class="kw">let </span>(cp, <span class="kw">_</span>) = EllipticCurveChaumPedersen::commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
+        <span class="kw">let </span>c = EllipticCurveChaumPedersen::challenge(<span class="kw-2">&amp;</span>params);
+        <span class="kw">let </span>fake_response = Scalar::generate_random().unwrap();
+        <span class="kw">let </span>verified = EllipticCurveChaumPedersen::verify(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>fake_response, <span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>cp);
+        <span class="macro">assert!</span>(!verified);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_fail_elliptic_curve_verification_with_ec_params() {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = OsRng;
+        <span class="comment">// Setting up the group parameters.
+        </span><span class="kw">let </span>params = EC25519_GROUP_PARAMS.to_owned();
+        <span class="comment">// Creating a secret value x.
+        </span><span class="kw">let </span>x = Scalar::random(<span class="kw-2">&amp;mut </span>rng);
+        
+        <span class="kw">let </span>(cp, <span class="kw">_</span>) = EllipticCurveChaumPedersen::commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
+        <span class="kw">let </span>c = EllipticCurveChaumPedersen::challenge(<span class="kw-2">&amp;</span>params);
+        <span class="kw">let </span>fake_response = Scalar::generate_random().unwrap();
+        <span class="kw">let </span>verified = EllipticCurveChaumPedersen::verify(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>fake_response, <span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>cp);
+        <span class="macro">assert!</span>(!verified);
     }
 
     <span class="doccomment">/// Tests the serialization and deserialization of Ristretto points, simulating sending over a wire.

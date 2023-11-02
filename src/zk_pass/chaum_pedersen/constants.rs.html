@@ -111,14 +111,6 @@
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
 <a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
-<a href="#116" id="116">116</a>
-<a href="#117" id="117">117</a>
-<a href="#118" id="118">118</a>
-<a href="#119" id="119">119</a>
-<a href="#120" id="120">120</a>
-<a href="#121" id="121">121</a>
 </pre></div><pre class="rust"><code><span class="kw">use crate</span>::{chaum_pedersen::GroupParams, conversion::ByteConvertible};
 <span class="kw">use </span>curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
 <span class="kw">use </span>curve25519_dalek::RistrettoPoint;
@@ -184,25 +176,22 @@
         params
     };
 
-    <span class="comment">// Defining `EC25519_BASEPOINT_POINT_G` as a lazy static variable. This variable represents a base point on the elliptic curve Curve25519, specifically for the Ristretto group.
-    </span><span class="kw">pub static </span><span class="kw-2">ref </span>EC25519_BASEPOINT_POINT_G: RistrettoPoint = {
-        <span class="comment">// Creating the base point &#39;G&#39; from its byte representation, decoded from the hexadecimal string.
-        // The unwrap() method is called to handle the Result type, assuming the input is always valid.
-        </span>RistrettoPoint::from_bytes(
-            <span class="kw-2">&amp;</span>hex::decode(<span class="string">&quot;2aea1fc8034016ac0e9be8c357421a6a3afba883fd10d0f842f4ef6df6fb347a&quot;</span>).unwrap()
-        )
-        .unwrap() <span class="comment">// Unwrap is called again to handle the Option type, assuming the decoded bytes represent a valid point.
-    </span>};
-
-    <span class="comment">// Defining `EC25519_BASEPOINT_POINT_H` as a lazy static variable. This variable represents another distinct point on the elliptic curve Curve25519, specifically for the Ristretto group.
-    </span><span class="kw">pub static </span><span class="kw-2">ref </span>EC25519_BASEPOINT_POINT_H: RistrettoPoint = {
-        <span class="comment">// Creating the base point &#39;H&#39; from its byte representation, decoded from the hexadecimal string.
-        // Similar to the previous definition, unwrap() is used to handle the Result and Option types.
-        </span>RistrettoPoint::from_bytes(
-            <span class="kw-2">&amp;</span>hex::decode(<span class="string">&quot;ae0855e254e43f00ad816c82b3a801f9995fe0717c826eb776b7a29f13e04c78&quot;</span>).unwrap()
-        )
-        .unwrap() <span class="comment">// Unwrap is called again to ensure the decoded bytes represent a valid point.
-    </span>};
+    <span class="comment">// Defining `EC25519_GROUP_PARAMS` as a lazy static variable. This variable represents the group parameters for the elliptic curve Curve25519, specifically for the Ristretto group.
+    </span><span class="kw">pub static </span><span class="kw-2">ref </span>EC25519_GROUP_PARAMS: GroupParams&lt;RistrettoPoint&gt; = {
+        <span class="kw">let </span>params = GroupParams::&lt;RistrettoPoint&gt; {
+            g: RistrettoPoint::from_bytes(
+                <span class="kw-2">&amp;</span>hex::decode(<span class="string">&quot;2aea1fc8034016ac0e9be8c357421a6a3afba883fd10d0f842f4ef6df6fb347a&quot;</span>).unwrap()
+            )
+            .unwrap().to_owned(),
+            h: RistrettoPoint::from_bytes(
+                <span class="kw-2">&amp;</span>hex::decode(<span class="string">&quot;ae0855e254e43f00ad816c82b3a801f9995fe0717c826eb776b7a29f13e04c78&quot;</span>).unwrap()
+            )
+            .unwrap().to_owned(),
+            p: RISTRETTO_BASEPOINT_POINT.to_owned(),
+            q: RISTRETTO_BASEPOINT_POINT.to_owned(),
+        };
+        params
+    };
 
 }
 
@@ -230,12 +219,7 @@
     </span><span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
         <span class="kw">match </span>s {
             <span class="comment">// Matching the string &quot;ec25519&quot; and returning the corresponding group parameters.
-            </span><span class="string">&quot;ec25519&quot; </span>=&gt; <span class="prelude-val">Ok</span>(GroupParams {
-                g: EC25519_BASEPOINT_POINT_G.to_owned(),
-                h: EC25519_BASEPOINT_POINT_H.to_owned(),
-                p: RISTRETTO_BASEPOINT_POINT.to_owned(),
-                q: RISTRETTO_BASEPOINT_POINT.to_owned(),
-            }),
+            </span><span class="string">&quot;ec25519&quot; </span>=&gt; <span class="prelude-val">Ok</span>(EC25519_GROUP_PARAMS.to_owned()),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(()), <span class="comment">// Returning an error for unrecognized strings.
         </span>}
     }

@@ -164,12 +164,14 @@
 <a href="#164" id="164">164</a>
 <a href="#165" id="165">165</a>
 <a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>tonic::codegen::StdError;
 <span class="kw">use </span>tonic::transport::Channel;
 
 <span class="kw">use </span><span class="kw">crate</span>::chaum_pedersen::GroupParams;
 <span class="kw">use </span><span class="kw">crate</span>::chaum_pedersen::ChaumPedersen;
 <span class="kw">use </span><span class="kw">crate</span>::conversion::ByteConvertible;
+<span class="kw">use </span><span class="kw">crate</span>::rand::RandomGenerator;
 <span class="kw">use </span>std::error::Error;
 
 <span class="doccomment">/// A module that contains the auto-generated gRPC code for the Zero-Knowledge Proof (ZKP) authentication service.
@@ -294,8 +296,8 @@
         Response = S,
         Challenge = S,
     &gt;,
-    P: ByteConvertible&lt;P&gt;,
-    S: ByteConvertible&lt;S&gt;,
+    P: ByteConvertible&lt;P&gt; + RandomGenerator&lt;P&gt;,
+    S: ByteConvertible&lt;S&gt; + RandomGenerator&lt;S&gt;,
 {
     <span class="comment">// Client calculates the commitment.
     </span><span class="kw">let </span>((y1, y2, r1, r2), k) = T::commitment(params, x);
