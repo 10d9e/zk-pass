@@ -27,6 +27,7 @@ lazy_static! {
 /// - `last_activity`: An `Instant` representing the last activity time of the session.
 #[derive(Debug, Clone)]
 struct Session {
+    #[allow(dead_code)]
     user: String,
     last_activity: Instant,
 }
