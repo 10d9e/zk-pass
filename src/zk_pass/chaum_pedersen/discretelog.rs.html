@@ -262,7 +262,6 @@
 <a href="#262" id="262">262</a>
 <a href="#263" id="263">263</a>
 <a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>num_bigint::{BigUint, RandBigInt};
 <span class="kw">use </span>num_traits::One;
 <span class="kw">use </span>rand::rngs::OsRng;
@@ -379,7 +378,6 @@
 
         lhs1 == rhs1 &amp;&amp; lhs2 == rhs2
     }
-
 }
 
 <span class="attr">#[cfg(test)]
@@ -462,7 +460,7 @@
         <span class="kw">let </span>params = RFC5114_MODP_1024_160_BIT_PARAMS.to_owned();
         <span class="kw">let </span><span class="kw-2">mut </span>rng = OsRng;
         <span class="kw">let </span>x = rng.gen_biguint_below(<span class="kw-2">&amp;</span>params.p);
-        
+
         <span class="kw">let </span>(cp, <span class="kw">_</span>) = DiscreteLogChaumPedersen::commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
         <span class="kw">let </span>c = DiscreteLogChaumPedersen::challenge(<span class="kw-2">&amp;</span>params);
         <span class="kw">let </span>fake_response = BigUint::generate_random().unwrap();
@@ -475,7 +473,7 @@
         <span class="kw">let </span>params = RFC5114_MODP_2048_224_BIT_PARAMS.to_owned();
         <span class="kw">let </span><span class="kw-2">mut </span>rng = OsRng;
         <span class="kw">let </span>x = rng.gen_biguint_below(<span class="kw-2">&amp;</span>params.p);
-        
+
         <span class="kw">let </span>(cp, <span class="kw">_</span>) = DiscreteLogChaumPedersen::commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
         <span class="kw">let </span>c = DiscreteLogChaumPedersen::challenge(<span class="kw-2">&amp;</span>params);
         <span class="kw">let </span>fake_response = BigUint::generate_random().unwrap();
@@ -488,7 +486,7 @@
         <span class="kw">let </span>params = RFC5114_MODP_2048_256_BIT_PARAMS.to_owned();
         <span class="kw">let </span><span class="kw-2">mut </span>rng = OsRng;
         <span class="kw">let </span>x = rng.gen_biguint_below(<span class="kw-2">&amp;</span>params.p);
-        
+
         <span class="kw">let </span>(cp, <span class="kw">_</span>) = DiscreteLogChaumPedersen::commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
         <span class="kw">let </span>c = DiscreteLogChaumPedersen::challenge(<span class="kw-2">&amp;</span>params);
         <span class="kw">let </span>fake_response = BigUint::generate_random().unwrap();

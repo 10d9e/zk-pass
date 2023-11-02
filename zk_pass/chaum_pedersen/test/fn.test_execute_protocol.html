@@ -34,7 +34,7 @@ without revealing it, while <code>false</code> indicates a failure in the protoc
 <span class="kw">use </span>zk_pass::chaum_pedersen::constants::RFC5114_MODP_2048_256_BIT_PARAMS;
 <span class="kw">use </span>rand::rngs::OsRng;
 <span class="kw">use </span>num_bigint::RandBigInt;
- 
+
 <span class="kw">let </span>params = RFC5114_MODP_2048_256_BIT_PARAMS.to_owned();
 <span class="kw">let </span><span class="kw-2">mut </span>rng = OsRng;
 <span class="kw">let </span>secret = rng.gen_biguint_below(<span class="kw-2">&amp;</span>params.p);

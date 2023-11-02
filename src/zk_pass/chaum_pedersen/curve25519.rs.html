@@ -393,9 +393,9 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::chaum_pedersen::constants::EC25519_GROUP_PARAMS;
     <span class="kw">use </span><span class="kw">crate</span>::chaum_pedersen::test::test_execute_protocol;
+    <span class="kw">use </span><span class="kw">crate</span>::rand::RandomGenerator;
     <span class="kw">use </span>curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
     <span class="kw">use </span>curve25519_dalek::ristretto::CompressedRistretto;
-    <span class="kw">use </span><span class="kw">crate</span>::rand::RandomGenerator;
 
     <span class="kw">fn </span>serialize_ristretto_point(point: <span class="kw-2">&amp;</span>RistrettoPoint) -&gt; String {
         <span class="comment">// Compress the RistrettoPoint
@@ -483,7 +483,7 @@
         <span class="comment">// Setting up the group parameters.
         </span><span class="kw">let </span>params = EC25519_GROUP_PARAMS.to_owned();
         <span class="kw">let </span>x = Scalar::random(<span class="kw-2">&amp;mut </span>rng);
-        
+
         <span class="kw">let </span>(cp, <span class="kw">_</span>) = EllipticCurveChaumPedersen::commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
         <span class="kw">let </span>c = EllipticCurveChaumPedersen::challenge(<span class="kw-2">&amp;</span>params);
         <span class="kw">let </span>fake_response = Scalar::generate_random().unwrap();
@@ -498,7 +498,7 @@
         </span><span class="kw">let </span>params = EC25519_GROUP_PARAMS.to_owned();
         <span class="comment">// Creating a secret value x.
         </span><span class="kw">let </span>x = Scalar::random(<span class="kw-2">&amp;mut </span>rng);
-        
+
         <span class="kw">let </span>(cp, <span class="kw">_</span>) = EllipticCurveChaumPedersen::commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
         <span class="kw">let </span>c = EllipticCurveChaumPedersen::challenge(<span class="kw-2">&amp;</span>params);
         <span class="kw">let </span>fake_response = Scalar::generate_random().unwrap();

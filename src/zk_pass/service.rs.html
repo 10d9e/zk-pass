@@ -229,27 +229,19 @@
 <a href="#229" id="229">229</a>
 <a href="#230" id="230">230</a>
 <a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
-</pre></div><pre class="rust"><code>
-<span class="kw">use </span><span class="kw">crate</span>::chaum_pedersen::curve25519::EllipticCurveChaumPedersen;
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::chaum_pedersen::curve25519::EllipticCurveChaumPedersen;
 <span class="kw">use </span><span class="kw">crate</span>::conversion::ByteConvertible;
 <span class="kw">use </span><span class="kw">crate</span>::repository::daoimpl::InMemoryUserDao;
 <span class="kw">use </span>curve25519_dalek::RistrettoPoint;
 <span class="kw">use </span>curve25519_dalek::Scalar;
+<span class="kw">use </span>log::{debug, error, info, trace};
 <span class="kw">use </span>num_bigint::BigUint;
 <span class="kw">use </span>std::sync::Mutex;
 <span class="kw">use </span>tonic::{Request, Response, Status};
 <span class="kw">use </span>uuid::Uuid;
-<span class="kw">use </span>log::{debug, error, trace, info};
 
 <span class="kw">use crate</span>::{
-    chaum_pedersen::{
-        discretelog::DiscreteLogChaumPedersen,
-        ChaumPedersen, GroupParams,
-    },
+    chaum_pedersen::{discretelog::DiscreteLogChaumPedersen, ChaumPedersen, GroupParams},
     repository::{dao::UserDao, models::User, session::update_session},
 };
 
