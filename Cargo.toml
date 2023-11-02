@@ -1,0 +1,41 @@
+[package]
+name = "zk_pass"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# General dependencies
+async-trait = "0.1.74"
+dotenv = "0.15.0"
+hex = "0.4.3"
+lazy_static = "1.4.0"
+once_cell = "1.18.0"
+prost = "0.12.1"
+prost-types = "0.12.1"
+serde = { version = "1.0.186", features = ["derive"] }
+serde_json = "1.0.105"
+tokio = { version = "1", features = ["full"] }
+tonic = "0.10.2"
+parking_lot = "0.12.1"
+uuid = { version = "1.5.0", features = ["v4", "fast-rng", "macro-diagnostics"] }
+chrono = "0.4"
+log = "0.4"
+env_logger = "0.9"
+
+# Number theory dependencies
+num-bigint = { version = "0.4", features = ["rand"] }
+num-primes = "0.3.0"
+num-traits = "0.2.17"
+rand = "0.8.5"
+
+# Elliptic curve dependencies
+curve25519-dalek = { version = "4.0.0", features = ["digest", "rand_core", "serde", "group"] }
+k256 = "0.13.1"
+rand_core = "0.6.4"
+sha2 = "0.10.8"
+cron = "0.12.0"
+structopt = "0.3.26"
+strum = { version = "0.25.0", features = ["derive"] }
+
+[build-dependencies]
+tonic-build = "0.10.2"
