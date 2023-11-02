@@ -132,7 +132,7 @@ where
     S: ByteConvertible<S>,
 {
     // Client calculates the commitment.
-    let ((y1, y2, r1, r2), k) = T::calculate_commitment(params, x);
+    let ((y1, y2, r1, r2), k) = T::commitment(params, x);
 
     // Registers the commitment with the server.
     client
@@ -148,7 +148,7 @@ where
     let challenge = S::from_bytes(&c)?;
 
     // Calculates the response to the challenge.
-    let s = T::calculate_response(&params, &k, &challenge, &x);
+    let s = T::challenge_response(&params, &k, &challenge, &x);
 
     // Sends the response to the server and receives a session ID.
     let session_id = client

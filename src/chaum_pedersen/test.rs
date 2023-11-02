@@ -48,14 +48,14 @@ where
     T: ChaumPedersen,
 {
     // The client calculates the commitment using their secret and the group parameters.
-    let (cp, k) = T::calculate_commitment(params, x);
+    let (cp, k) = T::commitment(params, x);
 
     // The server (simulated here) sends a challenge to the client.
     let c = T::challenge(params);
 
     // The client calculates the response based on the commitment random, challenge,
     // and their secret.
-    let s = T::calculate_response(params, &k, &c, &x);
+    let s = T::challenge_response(params, &k, &c, &x);
 
     // The server (simulated here) verifies the response against the challenge and
     // commitment parameters.

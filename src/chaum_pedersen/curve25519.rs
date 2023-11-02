@@ -44,7 +44,7 @@ impl ChaumPedersen for EllipticCurveChaumPedersen {
     ///
     /// # Returns
     /// A tuple containing the commitment parameters and the commitment random value.
-    fn calculate_commitment(
+    fn commitment(
         params: &Self::GroupParameters, x: &Self::Secret,
     ) -> (Self::CommitParameters, Self::CommitmentRandom)
     where
@@ -86,7 +86,7 @@ impl ChaumPedersen for EllipticCurveChaumPedersen {
     ///
     /// # Returns
     /// The response for the Chaum-Pedersen protocol.
-    fn calculate_response(
+    fn challenge_response(
         _: &Self::GroupParameters, k: &Self::CommitmentRandom, c: &Self::Challenge,
         x: &Self::Secret,
     ) -> Self::Response
@@ -165,7 +165,7 @@ mod test {
         };
 
         // Calculating the commitment.
-        let (cp, _) = EllipticCurveChaumPedersen::calculate_commitment(&params, &x);
+        let (cp, _) = EllipticCurveChaumPedersen::commitment(&params, &x);
         let (y1, y2, _, _) = cp;
 
         // Verifying the correctness of the commitment.

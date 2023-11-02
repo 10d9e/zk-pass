@@ -52,7 +52,7 @@ pub trait ChaumPedersen {
     ///
     /// # Returns
     /// A tuple containing the commitment parameters and the commitment randomness.
-    fn calculate_commitment(
+    fn commitment(
         params: &Self::GroupParameters, x: &Self::Secret,
     ) -> (Self::CommitParameters, Self::CommitmentRandom)
     where
@@ -69,7 +69,7 @@ pub trait ChaumPedersen {
     where
         Self: Sized;
 
-    /// Calculates the response in the Chaum-Pedersen protocol.
+    /// Calculates the challenge response in the Chaum-Pedersen protocol.
     ///
     /// # Arguments
     /// * `params` - Group parameters used in the protocol.
@@ -79,7 +79,7 @@ pub trait ChaumPedersen {
     ///
     /// # Returns
     /// The response value in the protocol.
-    fn calculate_response(
+    fn challenge_response(
         params: &Self::GroupParameters, k: &Self::CommitmentRandom, c: &Self::Challenge,
         x: &Self::Secret,
     ) -> Self::Response

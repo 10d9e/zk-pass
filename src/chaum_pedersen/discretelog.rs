@@ -40,7 +40,7 @@ impl ChaumPedersen for DiscreteLogChaumPedersen {
     /// * A tuple of commitments (`y1`, `y2`, `r1`, `r2`), where `y1` and `y2` are the actual commitments
     ///   and `r1` and `r2` are the random commitments.
     /// * The random value `k` used in the commitment calculations.
-    fn calculate_commitment(
+    fn commitment(
         params: &Self::GroupParameters, x: &Self::Secret,
     ) -> (Self::CommitParameters, Self::CommitmentRandom)
     where
@@ -76,7 +76,7 @@ impl ChaumPedersen for DiscreteLogChaumPedersen {
     ///
     /// # Returns
     /// A `BigUint` representing the challenge value.
-    fn calculate_response(
+    fn challenge_response(
         params: &Self::GroupParameters, k: &Self::CommitmentRandom, c: &Self::Challenge,
         x: &Self::Secret,
     ) -> Self::Response
@@ -140,7 +140,7 @@ mod tests {
             q: q.clone(),
         };
 
-        let (cp, _k) = DiscreteLogChaumPedersen::calculate_commitment(&params, &x);
+        let (cp, _k) = DiscreteLogChaumPedersen::commitment(&params, &x);
         let (y1, y2, r1, r2) = cp;
 
         assert_eq!(y1, params.g.modpow(&x, &params.p));
@@ -215,7 +215,7 @@ mod tests {
         let x = BigUint::from(10u32);
         let k = BigUint::from(17u32);
         let c = BigUint::from(0u32);
-        let s = DiscreteLogChaumPedersen::calculate_response(&params, &k, &c, &x);
+        let s = DiscreteLogChaumPedersen::challenge_response(&params, &k, &c, &x);
         println!("Response: {:?}", s);
 
         // server verifies
