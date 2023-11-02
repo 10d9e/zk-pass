@@ -1,6 +1,5 @@
 use curve25519_dalek::{RistrettoPoint, Scalar};
 use num_bigint::BigUint;
-use rand::rngs::OsRng;
 use sha2::{Digest, Sha512};
 use std::str::FromStr;
 use structopt::StructOpt;
