@@ -1,44 +1,37 @@
-name: doc
+name: Deploy Rust Documentation
 
 on:
   push:
     branches:
-      - main
+      - main  # Set to the default branch
 
 jobs:
-  deloy_docs:
-    name: Generate and deploy documentation
-
-    permissions:
-      contents: write
-      pages: write
-
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler libprotobuf-dev
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - name: Generate docs
-        uses: actions-rs/cargo@v1
-        with:
-          command: doc
-          args: --no-deps
-      - name: Prepare for deloyment
-        run: |
-          rm -rf ./docs
-          echo "<meta http-equiv=\"refresh\" content=\"0; url=auth_lib\">" > target/doc/index.html
-          cp -r target/doc ./docs
-      - name: Deploy to GitHub Pages
-        if: success()
-        uses: crazy-max/ghaction-github-pages@v3
-        with:
-          target_branch: gh-pages
-          build_dir: docs
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+
+    - name: Install Protocol Buffers Compiler
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y protobuf-compiler
+
+    - name: Install protoc-gen-rust
+      run: cargo install protobuf-codegen
+
+    - name: Build Documentation
+      run: cargo doc --no-deps
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./target/doc
