@@ -1,7 +1,13 @@
-/// A module containing various constants.
+/// This module defines various constants used throughout the application. These may include cryptographic constants, default values, or other static data that are integral to the operation of the system.
 pub mod constants;
+
+/// This module provides functionality related to the Curve25519 elliptic curve, often used in cryptographic operations, particularly in the elliptic curve implementation of the Chaum-Pedersen protocol.
 pub mod curve25519;
+
+/// This module focuses on the discrete logarithm problem and related cryptographic operations. It is particularly relevant for the discrete log implementation of the Chaum-Pedersen protocol.
 pub mod discretelog;
+
+/// A module dedicated to testing various components of the application. It includes test cases, utility functions for testing, and other resources needed to ensure the correctness and reliability of the system.
 pub mod test;
 
 /// A struct representing group parameters in cryptographic protocols.
