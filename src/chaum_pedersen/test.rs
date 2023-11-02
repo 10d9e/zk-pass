@@ -29,11 +29,18 @@ use crate::chaum_pedersen::ChaumPedersen;
 ///
 /// # Example
 /// ```
-/// // Assume `EllipticCurveChaumPedersen` implements `ChaumPedersen`.
-/// let params = EllipticCurveChaumPedersen::default_group_parameters();
-/// let secret = EllipticCurveChaumPedersen::generate_secret();
+/// // Assume `DiscreteLogChaumPedersen` implements `ChaumPedersen`.
+/// use zk_pass::chaum_pedersen::test::execute_protocol;
+/// use zk_pass::chaum_pedersen::discretelog::DiscreteLogChaumPedersen;
+/// use zk_pass::chaum_pedersen::constants::RFC5114_MODP_2048_256_BIT_PARAMS;
+/// use rand::rngs::OsRng;
+/// use num_bigint::RandBigInt;
+/// 
+/// let params = RFC5114_MODP_2048_256_BIT_PARAMS.to_owned();
+/// let mut rng = OsRng;
+/// let secret = rng.gen_biguint_below(&params.p);
 ///
-/// let result = execute_protocol::<EllipticCurveChaumPedersen>(&params, &secret);
+/// let result = execute_protocol::<DiscreteLogChaumPedersen>(&params, &secret);
 /// assert_eq!(result, true);
 /// ```
 pub fn execute_protocol<T>(params: &T::GroupParameters, x: &T::Secret) -> bool

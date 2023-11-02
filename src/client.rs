@@ -31,11 +31,6 @@ impl AuthClientLib {
     /// # Returns
     /// A result containing the `AuthClientLib` instance if the connection is successful,
     /// or an error if the connection fails.
-    ///
-    /// # Examples
-    /// ```
-    /// let auth_client = AuthClientLib::connect("http://[::1]:50051").await?;
-    /// ```
     pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
     where
         D: std::convert::TryInto<tonic::transport::Endpoint>,
@@ -54,11 +49,6 @@ impl AuthClientLib {
     ///
     /// # Returns
     /// A result indicating success or an error if the registration fails.
-    ///
-    /// # Examples
-    /// ```
-    /// auth_client.register("user1", vec![1, 2, 3], vec![4, 5, 6]).await?;
-    /// ```
     pub async fn register(
         &mut self, user: String, y1: Vec<u8>, y2: Vec<u8>,
     ) -> Result<(), tonic::Status> {
@@ -77,13 +67,6 @@ impl AuthClientLib {
     /// # Returns
     /// A result containing the challenge and an authentication ID if successful,
     /// or an error if the operation fails.
-    ///
-    /// # Examples
-    /// ```
-    /// let (challenge, auth_id) = auth_client
-    ///     .create_authentication_challenge("user1", vec![1, 2, 3], vec![4, 5, 6])
-    ///     .await?;
-    /// ```
     pub async fn create_authentication_challenge(
         &mut self, user: String, r1: Vec<u8>, r2: Vec<u8>,
     ) -> Result<(Vec<u8>, String), tonic::Status> {
@@ -102,11 +85,6 @@ impl AuthClientLib {
     /// # Returns
     /// A result containing a session ID if the verification is successful,
     /// or an error if the verification fails.
-    ///
-    /// # Examples
-    /// ```
-    /// let session_id = auth_client.verify_authentication("auth_id", vec![1, 2, 3]).await?;
-    /// ```
     pub async fn verify_authentication(
         &mut self, auth_id: String, s: Vec<u8>,
     ) -> Result<String, tonic::Status> {
