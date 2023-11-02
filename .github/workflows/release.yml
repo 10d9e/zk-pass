@@ -3,7 +3,7 @@ name: release
 # This workflow is triggered when a new tag is pushed to the repository.
 # To create a new release, follow these steps:
 # 1. Make sure all changes are committed and pushed to the main branch.
-# 2. Tag the commit you want to release with a version number, e.g., `v1.0.0`.
+# 2. Tag the commit you want to release with a version number, e.g., `git tag v1.0.0`.
 # 3. Push the tag to the remote repository: `git push origin v1.0.0`.
 # 4. The workflow will be triggered automatically when the tag is pushed.
 on:
