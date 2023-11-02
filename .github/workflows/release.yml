@@ -1,4 +1,4 @@
-name: release
+name: Release
 
 # This workflow is triggered when a new tag is pushed to the repository.
 # To create a new release, follow these steps:
@@ -22,6 +22,16 @@ jobs:
         toolchain: stable
         profile: minimal
         override: true
+
+    # Install protoc
+    - name: Install Protocol Buffers Compiler
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y protobuf-compiler
+
+    # Install Rust plugin for protoc (optional, depending on your needs)
+    - name: Install protoc-gen-rust
+      run: cargo install protobuf-codegen
 
     # Extract the version number from the tag
     - name: Extract Version
