@@ -170,9 +170,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     } else {
         println!("      🔢 modp group: {}", opt.modp)
     }
-
-    //let x = hash_or_randomize_secret(opt.secret.as_ref()); // Generates a secret value for the protocol.
-
+    println!("      🔑 user: {}", opt.user);
+    
     // Establishes a connection to the ZKPass server.
     let mut client = AuthClientLib::connect(format!("http://{}:{}", opt.host, opt.port)).await?;
 
