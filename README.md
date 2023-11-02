@@ -1,5 +1,3 @@
-Certainly! Below are additional verbose instructions explaining how to start the server from the command line and an overview of the options you can use:
-
 ### Starting the Server from the Command Line
 
 1. **Open Terminal or Command Prompt:** First, make sure you have a terminal or command prompt window open.
