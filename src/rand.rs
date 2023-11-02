@@ -1,8 +1,8 @@
-use num_bigint::BigUint;
-use curve25519_dalek::Scalar;
-use curve25519_dalek::RistrettoPoint;
-use rand::RngCore;
 use crate::conversion::ByteConvertible;
+use curve25519_dalek::RistrettoPoint;
+use curve25519_dalek::Scalar;
+use num_bigint::BigUint;
+use rand::RngCore;
 
 pub trait RandomGenerator<T> {
     fn generate_random() -> Result<T, Box<dyn std::error::Error>>;

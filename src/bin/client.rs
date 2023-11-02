@@ -1,5 +1,5 @@
 use curve25519_dalek::{RistrettoPoint, Scalar};
-use num_bigint::{BigUint, RandBigInt};
+use num_bigint::BigUint;
 use rand::rngs::OsRng;
 use sha2::{Digest, Sha512};
 use std::str::FromStr;
@@ -7,15 +7,14 @@ use structopt::StructOpt;
 use strum::VariantNames;
 use zk_pass::conversion::ByteConvertible;
 
+use std::error::Error;
 use zk_pass::chaum_pedersen::GroupParams;
 use zk_pass::chaum_pedersen::{
-    curve25519::EllipticCurveChaumPedersen, discretelog::DiscreteLogChaumPedersen,
-    ChaumPedersen,
+    curve25519::EllipticCurveChaumPedersen, discretelog::DiscreteLogChaumPedersen, ChaumPedersen,
 };
-use zk_pass::rand::RandomGenerator;
 use zk_pass::client::AuthClientLib;
 use zk_pass::cmdutil::{ChaumPedersenType, EllipticCurveType, RfcModpType};
-use std::error::Error;
+use zk_pass::rand::RandomGenerator;
 
 /// Command-line options structure for the ZKPass client.
 #[derive(Debug, StructOpt)]
@@ -86,7 +85,9 @@ struct Opt {
 /// let random_secret: [u8; 64] = hash_or_randomize_secret(None);
 /// // random_secret is now a randomly generated array of bytes.
 /// ```
-fn hash_or_randomize_secret<T: ByteConvertible<T> + RandomGenerator<T>>(secret: Option<&String>) -> T {
+fn hash_or_randomize_secret<T: ByteConvertible<T> + RandomGenerator<T>>(
+    secret: Option<&String>,
+) -> T {
     match secret {
         Some(s) => {
             let mut hasher = Sha512::new();
@@ -153,10 +154,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let opt = Opt::from_args(); // Parses command-line arguments.
 
     // Parses group parameters for Discrete Log and Elliptic Curve implementations.
-    let dl_params = GroupParams::<BigUint>::from_str(&opt.modp.to_string())
-        .map_err(|_| "Invalid discrete log group parameters provided in command-line arguments".to_string())?;
-    let ec_params = GroupParams::<RistrettoPoint>::from_str(&opt.curve.to_string())
-        .map_err(|_| "Invalid elliptic curve group parameters provided in command-line arguments".to_string())?;
+    let dl_params = GroupParams::<BigUint>::from_str(&opt.modp.to_string()).map_err(|_| {
+        "Invalid discrete log group parameters provided in command-line arguments".to_string()
+    })?;
+    let ec_params =
+        GroupParams::<RistrettoPoint>::from_str(&opt.curve.to_string()).map_err(|_| {
+            "Invalid elliptic curve group parameters provided in command-line arguments".to_string()
+        })?;
 
     // Displays initial client information.
     println!("🔥 Starting ZK_PASS server 🔥");
@@ -182,7 +186,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             // Secret generation for Discrete Log implementation.
             //let x = hash_string::<BigUint>(opt.secret);
             // Executes the protocol.
-            execute_protocol::<DiscreteLogChaumPedersen, _, _,>(
+            execute_protocol::<DiscreteLogChaumPedersen, _, _>(
                 &dl_params,
                 &x,
                 &opt.user,
@@ -195,7 +199,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             let x = Scalar::from(3u32);
 
             // Executes the protocol.
-            execute_protocol::<EllipticCurveChaumPedersen, _, _,>(
+            execute_protocol::<EllipticCurveChaumPedersen, _, _>(
                 &ec_params,
                 &x,
                 &opt.user,

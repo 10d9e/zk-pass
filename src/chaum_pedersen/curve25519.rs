@@ -1,6 +1,6 @@
 use crate::chaum_pedersen::{ChaumPedersen, GroupParams};
-use curve25519_dalek::RistrettoPoint;
 use curve25519_dalek::scalar::Scalar;
+use curve25519_dalek::RistrettoPoint;
 use rand::rngs::OsRng;
 
 /// A struct representing the Chaum-Pedersen protocol specialized for elliptic curve groups.
@@ -121,7 +121,6 @@ impl ChaumPedersen for EllipticCurveChaumPedersen {
     }
 }
 
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -226,5 +225,4 @@ mod test {
         // Asserting that the received point is equal to the original compressed point.
         assert_eq!(received_point, compressed_point);
     }
-
 }

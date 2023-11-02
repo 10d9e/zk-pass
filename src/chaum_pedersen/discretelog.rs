@@ -24,13 +24,13 @@ impl ChaumPedersen for DiscreteLogChaumPedersen {
 
     /// Defines the group parameters specific to discrete logarithm groups as `GroupParams<BigUint>`.
     type GroupParameters = GroupParams<BigUint>;
-    
+
     /// Defines the type of parameters returned during the commitment phase.
     /// These include two values representing the commitment and two values representing the randomness.
     type CommitParameters = (BigUint, BigUint, BigUint, BigUint);
 
     /// Calculates the commitment for the given secret `x` using the provided group parameters.
-    /// 
+    ///
     /// # Arguments
     /// * `params`: Group parameters which include the base points `g` and `h`, and the moduli `p` and `q`.
     /// * `x`: The secret value for which the commitment is being calculated.
@@ -57,7 +57,7 @@ impl ChaumPedersen for DiscreteLogChaumPedersen {
 
     /// Generates a random challenge for the protocol within the group's range.
     /// This challenge is used as part of the verification process.
-    /// 
+    ///
     /// # Arguments
     /// * `params`: Group parameters used to define the range within which the challenge is generated.
     ///
@@ -70,7 +70,7 @@ impl ChaumPedersen for DiscreteLogChaumPedersen {
 
     /// Generates a random challenge for the protocol within the group's range.
     /// This challenge is used as part of the verification process.
-    /// 
+    ///
     /// # Arguments
     /// * `params`: Group parameters used to define the range within which the challenge is generated.
     ///
@@ -92,7 +92,7 @@ impl ChaumPedersen for DiscreteLogChaumPedersen {
 
     /// Verifies the response against the given commitment, challenge, and group parameters.
     /// The function checks if the response is valid based on the protocol's criteria.
-    /// 
+    ///
     /// # Arguments
     /// * `params`: Group parameters used in the verification.
     /// * `s`: The response to be verified.

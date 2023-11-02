@@ -34,9 +34,9 @@ use zkp_auth::{
 
 /// A struct representing the zero-knowledge authentication service.
 /// It supports different types of Chaum-Pedersen protocols.
-/// 
+///
 /// # Type Parameters
-/// 
+///
 /// * `C`: Represents the type of Chaum-Pedersen protocol.
 /// * `T`: The type used for group elements.
 /// * `S`: The type used for scalar values.
@@ -85,7 +85,7 @@ impl ZkAuth<EllipticCurveChaumPedersen, RistrettoPoint, Scalar> {
 
 /// Implementation of the `Auth` trait for `ZkAuth`.
 ///
-/// This implementation provides the necessary methods for user registration, 
+/// This implementation provides the necessary methods for user registration,
 /// creating authentication challenges, and verifying authentication answers.
 /// It uses generic parameters `C`, `T`, and `S` to work with different cryptographic protocols and data types.
 ///
