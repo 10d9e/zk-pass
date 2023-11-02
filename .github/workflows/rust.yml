@@ -11,12 +11,25 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
+
+    # Install protoc
+    - name: Install Protocol Buffers Compiler
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y protobuf-compiler
+
+    # Install Rust plugin for protoc (optional, depending on your needs)
+    - name: Install protoc-gen-rust
+      run: cargo install protobuf-codegen
+
+    # Build
     - name: Build
       run: cargo build --verbose
+
+    # Run tests
     - name: Run tests
       run: cargo test --verbose
