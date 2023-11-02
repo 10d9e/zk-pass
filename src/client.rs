@@ -1,6 +1,11 @@
 use tonic::codegen::StdError;
 use tonic::transport::Channel;
 
+use crate::chaum_pedersen::GroupParams;
+use crate::chaum_pedersen::ChaumPedersen;
+use crate::conversion::ByteConvertible;
+use std::error::Error;
+
 /// A module that contains the auto-generated gRPC code for the Zero-Knowledge Proof (ZKP) authentication service.
 pub mod zkp_auth {
     tonic::include_proto!("zkp_auth");
@@ -91,4 +96,71 @@ impl AuthClientLib {
         let response = self.client.verify_authentication(request).await?;
         Ok(response.into_inner().session_id)
     }
+}
+
+/// Executes the Chaum-Pedersen protocol for client authentication.
+///
+/// This function handles the client side of the Chaum-Pedersen protocol, including
+/// registering the commitment, creating an authentication challenge, and verifying
+/// the authentication response.
+///
+/// # Type Parameters
+/// * `T`: The type of Chaum-Pedersen protocol (either Discrete Log or Elliptic Curve).
+/// * `P`: The type of the group parameters (either `BigUint` for Discrete Log or `RistrettoPoint` for Elliptic Curve).
+/// * `S`: The type of the response and challenge (usually `BigUint`).
+///
+/// # Arguments
+/// * `params` - Group parameters for the cryptographic operations.
+/// * `x` - The secret value used in the protocol.
+/// * `user` - The username for authentication.
+/// * `client` - The client object for communication with the ZKPass server.
+///
+/// # Returns
+/// Returns a `Result` which is `Ok(())` on successful execution or an error
+/// if any part of the process fails.
+pub async fn execute_protocol<T, P, S>(
+    params: &GroupParams<P>, x: &T::Secret, user: &String, client: &mut AuthClientLib,
+) -> Result<(), Box<dyn Error>>
+where
+    T: ChaumPedersen<
+        GroupParameters = GroupParams<P>,
+        CommitParameters = (P, P, P, P),
+        Response = S,
+        Challenge = S,
+    >,
+    P: ByteConvertible<P>,
+    S: ByteConvertible<S>,
+{
+    // Client calculates the commitment.
+    let ((y1, y2, r1, r2), k) = T::calculate_commitment(params, x);
+
+    // Registers the commitment with the server.
+    client
+        .register(user.clone(), P::to_bytes(&y1), P::to_bytes(&y2))
+        .await?;
+
+    // Creates an authentication challenge.
+    let (c, auth_id) = client
+        .create_authentication_challenge(user.clone(), P::to_bytes(&r1), P::to_bytes(&r2))
+        .await?;
+
+    // Converts the challenge from bytes to the appropriate type.
+    let challenge = S::from_bytes(&c)?;
+
+    // Calculates the response to the challenge.
+    let s = T::calculate_response(&params, &k, &challenge, &x);
+
+    // Sends the response to the server and receives a session ID.
+    let session_id = client
+        .verify_authentication(auth_id, S::to_bytes(&s))
+        .await?;
+
+    // Displays the session ID.
+    println!("🔑 Authentication successful! 🔑");
+    println!("Session ID: {}", session_id);
+
+    // The server verifies the authentication attempt.
+    T::verify(&params, &s, &challenge, &(y1, y2, r1, r2));
+
+    Ok(())
 }

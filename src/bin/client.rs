@@ -1,4 +1,4 @@
-use curve25519_dalek::{RistrettoPoint, Scalar};
+use curve25519_dalek::RistrettoPoint;
 use num_bigint::BigUint;
 use sha2::{Digest, Sha512};
 use std::str::FromStr;
@@ -7,10 +7,10 @@ use strum::VariantNames;
 use zk_pass::conversion::ByteConvertible;
 
 use std::error::Error;
-use zk_pass::chaum_pedersen::GroupParams;
 use zk_pass::chaum_pedersen::{
-    curve25519::EllipticCurveChaumPedersen, discretelog::DiscreteLogChaumPedersen, ChaumPedersen,
+    curve25519::EllipticCurveChaumPedersen, discretelog::DiscreteLogChaumPedersen, GroupParams,
 };
+use zk_pass::client::execute_protocol;
 use zk_pass::client::AuthClientLib;
 use zk_pass::cmdutil::{ChaumPedersenType, EllipticCurveType, RfcModpType};
 use zk_pass::rand::RandomGenerator;
@@ -171,7 +171,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         println!("      🔢 modp group: {}", opt.modp)
     }
 
-    let x = hash_or_randomize_secret(opt.secret.as_ref()); // Generates a secret value for the protocol.
+    //let x = hash_or_randomize_secret(opt.secret.as_ref()); // Generates a secret value for the protocol.
 
     // Establishes a connection to the ZKPass server.
     let mut client = AuthClientLib::connect(format!("http://{}:{}", opt.host, opt.port)).await?;
@@ -179,97 +179,26 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Executes the selected Chaum-Pedersen protocol.
     match opt.r#type {
         ChaumPedersenType::DiscreteLog => {
-            // Secret generation for Discrete Log implementation.
-            //let x = hash_string::<BigUint>(opt.secret);
-            // Executes the protocol.
+            // Executes the discrete log version of the protocol
             execute_protocol::<DiscreteLogChaumPedersen, _, _>(
                 &dl_params,
-                &x,
+                &hash_or_randomize_secret(opt.secret.as_ref()),
                 &opt.user,
                 &mut client,
             )
             .await?;
         }
         ChaumPedersenType::EllipticCurve => {
-            // TODO: Replace this with a secure implementation for secret generation.
-            let x = Scalar::from(3u32);
-
-            // Executes the protocol.
+            // Executes the elliptic curve version of the protocol
             execute_protocol::<EllipticCurveChaumPedersen, _, _>(
                 &ec_params,
-                &x,
+                &hash_or_randomize_secret(opt.secret.as_ref()),
                 &opt.user,
                 &mut client,
             )
             .await?;
         }
     }
-
-    Ok(())
-}
-
-/// Executes the Chaum-Pedersen protocol for client authentication.
-///
-/// This function handles the client side of the Chaum-Pedersen protocol, including
-/// registering the commitment, creating an authentication challenge, and verifying
-/// the authentication response.
-///
-/// # Type Parameters
-/// * `T`: The type of Chaum-Pedersen protocol (either Discrete Log or Elliptic Curve).
-/// * `P`: The type of the group parameters (either `BigUint` for Discrete Log or `RistrettoPoint` for Elliptic Curve).
-/// * `S`: The type of the response and challenge (usually `BigUint`).
-///
-/// # Arguments
-/// * `params` - Group parameters for the cryptographic operations.
-/// * `x` - The secret value used in the protocol.
-/// * `user` - The username for authentication.
-/// * `client` - The client object for communication with the ZKPass server.
-///
-/// # Returns
-/// Returns a `Result` which is `Ok(())` on successful execution or an error
-/// if any part of the process fails.
-async fn execute_protocol<T, P, S>(
-    params: &GroupParams<P>, x: &T::Secret, user: &String, client: &mut AuthClientLib,
-) -> Result<(), Box<dyn Error>>
-where
-    T: ChaumPedersen<
-        GroupParameters = GroupParams<P>,
-        CommitParameters = (P, P, P, P),
-        Response = S,
-        Challenge = S,
-    >,
-    P: ByteConvertible<P>,
-    S: ByteConvertible<S>,
-{
-    // Client calculates the commitment.
-    let ((y1, y2, r1, r2), k) = T::calculate_commitment(params, x);
-
-    // Registers the commitment with the server.
-    client
-        .register(user.clone(), P::to_bytes(&y1), P::to_bytes(&y2))
-        .await?;
-
-    // Creates an authentication challenge.
-    let (c, auth_id) = client
-        .create_authentication_challenge(user.clone(), P::to_bytes(&r1), P::to_bytes(&r2))
-        .await?;
-
-    // Converts the challenge from bytes to the appropriate type.
-    let challenge = S::from_bytes(&c)?;
-
-    // Calculates the response to the challenge.
-    let s = T::calculate_response(&params, &k, &challenge, &x);
-
-    // Sends the response to the server and receives a session ID.
-    let session_id = client
-        .verify_authentication(auth_id, S::to_bytes(&s))
-        .await?;
-
-    // Displays the session ID.
-    println!("Session ID: {}", session_id);
-
-    // The server verifies the authentication attempt.
-    T::verify(&params, &s, &challenge, &(y1, y2, r1, r2));
 
     Ok(())
 }

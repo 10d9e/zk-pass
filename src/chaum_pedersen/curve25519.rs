@@ -124,7 +124,7 @@ impl ChaumPedersen for EllipticCurveChaumPedersen {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::chaum_pedersen::test::execute_protocol;
+    use crate::chaum_pedersen::test::test_execute_protocol;
     use curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
     use curve25519_dalek::ristretto::CompressedRistretto;
 
@@ -193,7 +193,7 @@ mod test {
         };
 
         // Executing the protocol and asserting the verification is successful.
-        assert!(execute_protocol::<EllipticCurveChaumPedersen>(&params, &x));
+        assert!(test_execute_protocol::<EllipticCurveChaumPedersen>(&params, &x));
     }
 
     /// Tests the serialization and deserialization of Ristretto points, simulating sending over a wire.

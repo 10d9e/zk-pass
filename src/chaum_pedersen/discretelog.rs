@@ -123,7 +123,7 @@ mod tests {
         RFC5114_MODP_1024_160_BIT_PARAMS, RFC5114_MODP_2048_224_BIT_PARAMS,
         RFC5114_MODP_2048_256_BIT_PARAMS,
     };
-    use crate::chaum_pedersen::test::execute_protocol;
+    use crate::chaum_pedersen::test::test_execute_protocol;
 
     #[test]
     fn test_discrete_log_commitment() {
@@ -163,7 +163,7 @@ mod tests {
             q: q.clone(),
         };
 
-        assert!(execute_protocol::<DiscreteLogChaumPedersen>(&params, &x));
+        assert!(test_execute_protocol::<DiscreteLogChaumPedersen>(&params, &x));
     }
 
     #[test]
@@ -171,7 +171,7 @@ mod tests {
         let params = RFC5114_MODP_1024_160_BIT_PARAMS.to_owned();
         let mut rng = OsRng;
         let x = rng.gen_biguint_below(&params.p);
-        assert!(execute_protocol::<DiscreteLogChaumPedersen>(&params, &x));
+        assert!(test_execute_protocol::<DiscreteLogChaumPedersen>(&params, &x));
     }
 
     #[test]
@@ -179,7 +179,7 @@ mod tests {
         let params = RFC5114_MODP_2048_224_BIT_PARAMS.to_owned();
         let mut rng = OsRng;
         let x = rng.gen_biguint_below(&params.p);
-        assert!(execute_protocol::<DiscreteLogChaumPedersen>(&params, &x));
+        assert!(test_execute_protocol::<DiscreteLogChaumPedersen>(&params, &x));
     }
 
     #[test]
@@ -187,7 +187,7 @@ mod tests {
         let params = RFC5114_MODP_2048_256_BIT_PARAMS.to_owned();
         let mut rng = OsRng;
         let x = rng.gen_biguint_below(&params.p);
-        assert!(execute_protocol::<DiscreteLogChaumPedersen>(&params, &x));
+        assert!(test_execute_protocol::<DiscreteLogChaumPedersen>(&params, &x));
     }
 
     #[test]

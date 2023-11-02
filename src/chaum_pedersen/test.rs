@@ -40,10 +40,10 @@ use crate::chaum_pedersen::ChaumPedersen;
 /// let mut rng = OsRng;
 /// let secret = rng.gen_biguint_below(&params.p);
 ///
-/// let result = execute_protocol::<DiscreteLogChaumPedersen>(&params, &secret);
+/// let result = test_execute_protocol::<DiscreteLogChaumPedersen>(&params, &secret);
 /// assert_eq!(result, true);
 /// ```
-pub fn execute_protocol<T>(params: &T::GroupParameters, x: &T::Secret) -> bool
+pub fn test_execute_protocol<T>(params: &T::GroupParameters, x: &T::Secret) -> bool
 where
     T: ChaumPedersen,
 {
