@@ -354,16 +354,7 @@
 </span><span class="kw">async fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
     <span class="kw">let </span>opt = Opt::from_args(); <span class="comment">// Parses command-line arguments.
 
-    // Parses group parameters for Discrete Log and Elliptic Curve implementations.
-    </span><span class="kw">let </span>dl_params = GroupParams::&lt;BigUint&gt;::from_str(<span class="kw-2">&amp;</span>opt.modp.to_string()).map_err(|<span class="kw">_</span>| {
-        <span class="string">&quot;Invalid discrete log group parameters provided in command-line arguments&quot;</span>.to_string()
-    })<span class="question-mark">?</span>;
-    <span class="kw">let </span>ec_params =
-        GroupParams::&lt;RistrettoPoint&gt;::from_str(<span class="kw-2">&amp;</span>opt.curve.to_string()).map_err(|<span class="kw">_</span>| {
-            <span class="string">&quot;Invalid elliptic curve group parameters provided in command-line arguments&quot;</span>.to_string()
-        })<span class="question-mark">?</span>;
-
-    <span class="comment">// Displays initial client information.
+    // Displays initial client information.
     </span><span class="macro">println!</span>(<span class="string">&quot;🔥 Starting ZK_PASS client 🔥&quot;</span>);
     <span class="macro">println!</span>(<span class="string">&quot;      🤖 host: {}&quot;</span>, opt.host);
     <span class="macro">println!</span>(<span class="string">&quot;      🔌 port: {}&quot;</span>, opt.port);
@@ -382,7 +373,12 @@
     </span><span class="kw">match </span>opt.r#type {
         ChaumPedersenType::DiscreteLog =&gt; {
             <span class="comment">// Executes the discrete log version of the protocol
-            </span>execute_protocol::&lt;DiscreteLogChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;(
+            // Parses group parameters for Discrete Log and Elliptic Curve implementations.
+            </span><span class="kw">let </span>dl_params = GroupParams::&lt;BigUint&gt;::from_str(<span class="kw-2">&amp;</span>opt.modp.to_string()).map_err(|<span class="kw">_</span>| {
+                <span class="string">&quot;Invalid discrete log group parameters provided in command-line arguments&quot;</span>.to_string()
+            })<span class="question-mark">?</span>;
+
+            execute_protocol::&lt;DiscreteLogChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;(
                 <span class="kw-2">&amp;</span>dl_params,
                 <span class="kw-2">&amp;</span>hash_or_randomize_secret(opt.secret.as_ref()),
                 <span class="kw-2">&amp;</span>opt.user,
@@ -392,7 +388,11 @@
         }
         ChaumPedersenType::EllipticCurve =&gt; {
             <span class="comment">// Executes the elliptic curve version of the protocol
-            </span>execute_protocol::&lt;EllipticCurveChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;(
+            </span><span class="kw">let </span>ec_params = GroupParams::&lt;RistrettoPoint&gt;::from_str(<span class="kw-2">&amp;</span>opt.curve.to_string()).map_err(|<span class="kw">_</span>| {
+                <span class="string">&quot;Invalid elliptic curve group parameters provided in command-line arguments&quot;</span>.to_string()
+            })<span class="question-mark">?</span>;
+
+            execute_protocol::&lt;EllipticCurveChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;(
                 <span class="kw-2">&amp;</span>ec_params,
                 <span class="kw-2">&amp;</span>hash_or_randomize_secret(opt.secret.as_ref()),
                 <span class="kw-2">&amp;</span>opt.user,

@@ -232,32 +232,20 @@
 <a href="#232" id="232">232</a>
 <a href="#233" id="233">233</a>
 <a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
-<a href="#236" id="236">236</a>
-<a href="#237" id="237">237</a>
-<a href="#238" id="238">238</a>
-<a href="#239" id="239">239</a>
-<a href="#240" id="240">240</a>
-<a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::chaum_pedersen::constants::EC25519_BASEPOINT_POINT_G;
-<span class="kw">use </span><span class="kw">crate</span>::chaum_pedersen::constants::EC25519_BASEPOINT_POINT_H;
-<span class="kw">use </span><span class="kw">crate</span>::chaum_pedersen::curve25519::EllipticCurveChaumPedersen;
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::chaum_pedersen::curve25519::EllipticCurveChaumPedersen;
 <span class="kw">use </span><span class="kw">crate</span>::conversion::ByteConvertible;
 <span class="kw">use </span><span class="kw">crate</span>::repository::daoimpl::InMemoryUserDao;
-<span class="kw">use </span>curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
 <span class="kw">use </span>curve25519_dalek::RistrettoPoint;
 <span class="kw">use </span>curve25519_dalek::Scalar;
-<span class="kw">use </span>log::{debug, error, trace};
 <span class="kw">use </span>num_bigint::BigUint;
 <span class="kw">use </span>std::sync::Mutex;
 <span class="kw">use </span>tonic::{Request, Response, Status};
 <span class="kw">use </span>uuid::Uuid;
+<span class="kw">use </span>log::{debug, error, trace, info};
 
 <span class="kw">use crate</span>::{
     chaum_pedersen::{
-        constants::RFC5114_MODP_1024_160_BIT_PARAMS, discretelog::DiscreteLogChaumPedersen,
+        discretelog::DiscreteLogChaumPedersen,
         ChaumPedersen, GroupParams,
     },
     repository::{dao::UserDao, models::User, session::update_session},
@@ -293,8 +281,7 @@
 <span class="comment">// Implementations for different Chaum-Pedersen protocols
 </span><span class="kw">impl </span>ZkAuth&lt;DiscreteLogChaumPedersen, BigUint, BigUint&gt; {
     <span class="doccomment">/// Creates a new instance of `ZkAuth` using the Discrete Log Chaum-Pedersen protocol.
-    </span><span class="kw">pub fn </span>new_discrete_log_chaum_pedersen() -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>params = RFC5114_MODP_1024_160_BIT_PARAMS.to_owned();
+    </span><span class="kw">pub fn </span>new_discrete_log_chaum_pedersen(params: GroupParams&lt;BigUint&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>dao = Mutex::new(Box::new(InMemoryUserDao::&lt;BigUint, BigUint&gt;::new())
             <span class="kw">as </span>Box&lt;<span class="kw">dyn </span>UserDao&lt;BigUint, BigUint&gt; + Send + Sync&gt;);
         <span class="self">Self </span>{
@@ -308,13 +295,7 @@
 
 <span class="kw">impl </span>ZkAuth&lt;EllipticCurveChaumPedersen, RistrettoPoint, Scalar&gt; {
     <span class="doccomment">/// Creates a new instance of `ZkAuth` using the Elliptic Curve Chaum-Pedersen protocol.
-    </span><span class="kw">pub fn </span>new_elliptic_curve_chaum_pedersen() -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>params = GroupParams {
-            g: EC25519_BASEPOINT_POINT_G.to_owned(),
-            h: EC25519_BASEPOINT_POINT_H.to_owned(),
-            p: RISTRETTO_BASEPOINT_POINT.to_owned(),
-            q: RISTRETTO_BASEPOINT_POINT.to_owned(),
-        };
+    </span><span class="kw">pub fn </span>new_elliptic_curve_chaum_pedersen(params: GroupParams&lt;RistrettoPoint&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>dao = Mutex::new(Box::new(InMemoryUserDao::&lt;RistrettoPoint, Scalar&gt;::new())
             <span class="kw">as </span>Box&lt;<span class="kw">dyn </span>UserDao&lt;RistrettoPoint, Scalar&gt; + Send + Sync&gt;);
         <span class="self">Self </span>{
@@ -480,6 +461,7 @@
             dao.delete_auth_challenge(<span class="kw-2">&amp;</span>req.auth_id);
         }
 
+        <span class="macro">info!</span>(<span class="string">&quot;🔑 User: {} authenticated, session id: {}&quot;</span>, user.username, req.auth_id);
         <span class="macro">trace!</span>(<span class="string">&quot;verify_authentication reply: {:?}&quot;</span>, reply);
         <span class="prelude-val">Ok</span>(Response::new(reply))
     }

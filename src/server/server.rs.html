@@ -126,6 +126,17 @@
 <a href="#126" id="126">126</a>
 <a href="#127" id="127">127</a>
 <a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>structopt::StructOpt;
 <span class="kw">use </span>strum::VariantNames;
 <span class="kw">use </span>tonic::transport::Server;
@@ -134,6 +145,10 @@
 <span class="kw">use </span>zk_pass::service::ZkAuth;
 <span class="kw">use </span>zk_pass::chaum_pedersen::discretelog::DiscreteLogChaumPedersen;
 <span class="kw">use </span>zk_pass::chaum_pedersen::curve25519::EllipticCurveChaumPedersen;
+<span class="kw">use </span>curve25519_dalek::RistrettoPoint;
+<span class="kw">use </span>zk_pass::chaum_pedersen::GroupParams;
+<span class="kw">use </span>num_bigint::BigUint;
+<span class="kw">use </span>std::str::FromStr;
 
 <span class="doccomment">/// Struct representing command line options for the server.
 </span><span class="attr">#[derive(StructOpt, Debug)]
@@ -236,15 +251,22 @@
 
     <span class="comment">// Initialize and start the server based on stereotype.
     </span><span class="kw">match </span>stereotype {
+        
         ChaumPedersenType::DiscreteLog =&gt; {
-            <span class="kw">let </span>auth = ZkAuth::&lt;DiscreteLogChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;::new_discrete_log_chaum_pedersen();
+            <span class="kw">let </span>params = GroupParams::&lt;BigUint&gt;::from_str(<span class="kw-2">&amp;</span>modp.to_string()).map_err(|<span class="kw">_</span>| {
+                <span class="string">&quot;Invalid discrete log group parameters provided in command-line arguments&quot;</span>.to_string()
+            })<span class="question-mark">?</span>;
+            <span class="kw">let </span>auth = ZkAuth::&lt;DiscreteLogChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;::new_discrete_log_chaum_pedersen(params);
             Server::builder()
                 .add_service(AuthServer::new(auth))
                 .serve(addr)
                 .<span class="kw">await</span><span class="question-mark">?</span>;
         }
         ChaumPedersenType::EllipticCurve =&gt; {
-            <span class="kw">let </span>auth = ZkAuth::&lt;EllipticCurveChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;::new_elliptic_curve_chaum_pedersen();
+            <span class="kw">let </span>params = GroupParams::&lt;RistrettoPoint&gt;::from_str(<span class="kw-2">&amp;</span>curve.to_string()).map_err(|<span class="kw">_</span>| {
+                <span class="string">&quot;Invalid elliptic curve group parameters provided in command-line arguments&quot;</span>.to_string()
+            })<span class="question-mark">?</span>;
+            <span class="kw">let </span>auth = ZkAuth::&lt;EllipticCurveChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;::new_elliptic_curve_chaum_pedersen(params);
             Server::builder()
                 .add_service(AuthServer::new(auth))
                 .serve(addr)

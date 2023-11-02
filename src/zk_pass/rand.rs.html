@@ -70,6 +70,10 @@
 <a href="#70" id="70">70</a>
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::conversion::ByteConvertible;
 <span class="kw">use </span>curve25519_dalek::RistrettoPoint;
 <span class="kw">use </span>curve25519_dalek::Scalar;
@@ -105,7 +109,11 @@
         <span class="kw">let </span><span class="kw-2">mut </span>rng = rand::thread_rng();
         <span class="kw">let </span><span class="kw-2">mut </span>bytes = <span class="macro">vec!</span>[<span class="number">0u8</span>; <span class="number">32</span>];
         rng.fill_bytes(<span class="kw-2">&amp;mut </span>bytes);
-        BigUint::from_bytes(<span class="kw-2">&amp;</span>bytes)
+
+        <span class="comment">//let mut rng = OsRng;
+        //rng.gen_biguint_below(&amp;params.p)
+
+        </span>BigUint::from_bytes(<span class="kw-2">&amp;</span>bytes)
     }
 }
 
