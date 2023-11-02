@@ -1,10 +1,11 @@
-// Import necessary libraries and modules.
-use structopt::StructOpt; // Library for parsing command line arguments.
-use strum::VariantNames; // Library for working with enum variant names.
-use tonic::transport::Server; // gRPC server from the tonic library.
-use zk_pass::cmdutil::{ChaumPedersenType, EllipticCurveType, RfcModpType}; // Module containing utility types for the ZKPass protocol.
-use zk_pass::service::zkp_auth::auth_server::AuthServer; // Module for ZKPass authentication server.
-use zk_pass::service::ZkAuth; // Module for ZKPass authentication service.
+use structopt::StructOpt;
+use strum::VariantNames;
+use tonic::transport::Server;
+use zk_pass::cmdutil::{ChaumPedersenType, EllipticCurveType, RfcModpType};
+use zk_pass::service::zkp_auth::auth_server::AuthServer;
+use zk_pass::service::ZkAuth;
+use zk_pass::chaum_pedersen::discretelog::DiscreteLogChaumPedersen;
+use zk_pass::chaum_pedersen::curve25519::EllipticCurveChaumPedersen;
 
 /// Struct representing command line options for the server.
 #[derive(StructOpt, Debug)]
@@ -87,44 +88,41 @@ struct Opt {
 /// Remember to replace the values in the command with those suitable for your setup.
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Parse command line arguments.
-    let opt = Opt::from_args();
-    let host = opt.host;
-    let port = opt.port;
-    let stereotype = opt.r#type;
-    let curve = opt.curve;
-    let modp = opt.modp;
+    // Parse command line arguments using struct destructuring.
+    let Opt { host, port, r#type: stereotype, curve, modp, .. } = Opt::from_args();
 
     // Print server start information.
     println!("🔥 Starting ZK_PASS server 🔥");
     println!("      🤖 host: {}", host);
     println!("      🔌 port: {}", port);
     println!("      💥 stereotype: {}", stereotype);
-    if stereotype == ChaumPedersenType::EllipticCurve {
-        println!("      📈 elliptic curve: {}", curve)
-    } else {
-        println!("      🔢 modp group: {}", modp)
+    match stereotype {
+        ChaumPedersenType::EllipticCurve => println!("      📈 elliptic curve: {}", curve),
+        _ => println!("      🔢 modp group: {}", modp),
     }
 
-    // Parse the address and start the server.
-    let addr = format!("{}:{}", host, port).parse()?;
+    // Parse the address and handle errors informatively.
+    let addr = format!("{}:{}", host, port)
+        .parse()
+        .map_err(|_| "Failed to parse server address")?;
+
+    // Initialize and start the server based on stereotype.
     match stereotype {
         ChaumPedersenType::DiscreteLog => {
-            // Initialize and start the server with discrete log Chaum-Pedersen.
-            let auth = ZkAuth::new_discrete_log_chaum_pedersen();
+            let auth = ZkAuth::<DiscreteLogChaumPedersen, _, _>::new_discrete_log_chaum_pedersen();
             Server::builder()
                 .add_service(AuthServer::new(auth))
                 .serve(addr)
                 .await?;
         }
         ChaumPedersenType::EllipticCurve => {
-            // Initialize and start the server with elliptic curve Chaum-Pedersen.
-            let auth = ZkAuth::new_elliptic_curve_chaum_pedersen();
+            let auth = ZkAuth::<EllipticCurveChaumPedersen, _, _>::new_elliptic_curve_chaum_pedersen();
             Server::builder()
                 .add_service(AuthServer::new(auth))
                 .serve(addr)
                 .await?;
         }
     }
+
     Ok(())
 }
