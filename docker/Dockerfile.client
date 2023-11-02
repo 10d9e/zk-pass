@@ -1,0 +1,33 @@
+# Use an official Rust runtime as a parent image
+FROM rust:1.73.0 as builder
+
+# Set the working directory in the container to /app
+WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+COPY .. .
+
+# Install protobuf-compiler
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y --no-install-recommends protobuf-compiler \
+ && rm -rf /var/lib/apt/lists/*
+
+# Build the client program using Cargo
+RUN cargo build --release
+
+# Start a new stage and copy the client binary from the builder stage
+FROM rust:1.73.0
+COPY --from=builder /app/target/release/client /usr/local/bin/client
+
+# Set default environment variables
+ENV CLIENT_HOST=server
+ENV CLIENT_PORT=50051
+ENV CLIENT_TYPE=discrete_log
+ENV CLIENT_CURVE=ec25519
+ENV CLIENT_MODP=rfc5114_modp_1024_160
+ENV CLIENT_USER=foo
+ENV CLIENT_SECRET=
+
+# Run the client program when the container launches
+CMD ["sh", "-c", "client --host ${CLIENT_HOST} --port ${CLIENT_PORT} --type ${CLIENT_TYPE} --curve ${CLIENT_CURVE} --modp ${CLIENT_MODP} --user ${CLIENT_USER} --secret ${CLIENT_SECRET}"]

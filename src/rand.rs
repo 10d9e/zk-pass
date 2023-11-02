@@ -33,6 +33,10 @@ impl RandomGenerator<BigUint> for BigUint {
         let mut rng = rand::thread_rng();
         let mut bytes = vec![0u8; 32];
         rng.fill_bytes(&mut bytes);
+
+        //let mut rng = OsRng;
+        //rng.gen_biguint_below(&params.p)
+
         BigUint::from_bytes(&bytes)
     }
 }

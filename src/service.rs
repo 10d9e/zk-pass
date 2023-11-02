@@ -1,20 +1,17 @@
-use crate::chaum_pedersen::constants::EC25519_BASEPOINT_POINT_G;
-use crate::chaum_pedersen::constants::EC25519_BASEPOINT_POINT_H;
 use crate::chaum_pedersen::curve25519::EllipticCurveChaumPedersen;
 use crate::conversion::ByteConvertible;
 use crate::repository::daoimpl::InMemoryUserDao;
-use curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
 use curve25519_dalek::RistrettoPoint;
 use curve25519_dalek::Scalar;
-use log::{debug, error, trace};
 use num_bigint::BigUint;
 use std::sync::Mutex;
 use tonic::{Request, Response, Status};
 use uuid::Uuid;
+use log::{debug, error, trace, info};
 
 use crate::{
     chaum_pedersen::{
-        constants::RFC5114_MODP_1024_160_BIT_PARAMS, discretelog::DiscreteLogChaumPedersen,
+        discretelog::DiscreteLogChaumPedersen,
         ChaumPedersen, GroupParams,
     },
     repository::{dao::UserDao, models::User, session::update_session},
@@ -50,8 +47,7 @@ pub struct ZkAuth<C, T, S> {
 // Implementations for different Chaum-Pedersen protocols
 impl ZkAuth<DiscreteLogChaumPedersen, BigUint, BigUint> {
     /// Creates a new instance of `ZkAuth` using the Discrete Log Chaum-Pedersen protocol.
-    pub fn new_discrete_log_chaum_pedersen() -> Self {
-        let params = RFC5114_MODP_1024_160_BIT_PARAMS.to_owned();
+    pub fn new_discrete_log_chaum_pedersen(params: GroupParams<BigUint>) -> Self {
         let dao = Mutex::new(Box::new(InMemoryUserDao::<BigUint, BigUint>::new())
             as Box<dyn UserDao<BigUint, BigUint> + Send + Sync>);
         Self {
@@ -65,13 +61,7 @@ impl ZkAuth<DiscreteLogChaumPedersen, BigUint, BigUint> {
 
 impl ZkAuth<EllipticCurveChaumPedersen, RistrettoPoint, Scalar> {
     /// Creates a new instance of `ZkAuth` using the Elliptic Curve Chaum-Pedersen protocol.
-    pub fn new_elliptic_curve_chaum_pedersen() -> Self {
-        let params = GroupParams {
-            g: EC25519_BASEPOINT_POINT_G.to_owned(),
-            h: EC25519_BASEPOINT_POINT_H.to_owned(),
-            p: RISTRETTO_BASEPOINT_POINT.to_owned(),
-            q: RISTRETTO_BASEPOINT_POINT.to_owned(),
-        };
+    pub fn new_elliptic_curve_chaum_pedersen(params: GroupParams<RistrettoPoint>) -> Self {
         let dao = Mutex::new(Box::new(InMemoryUserDao::<RistrettoPoint, Scalar>::new())
             as Box<dyn UserDao<RistrettoPoint, Scalar> + Send + Sync>);
         Self {
@@ -237,6 +227,7 @@ where
             dao.delete_auth_challenge(&req.auth_id);
         }
 
+        info!("🔑 User: {} authenticated, session id: {}", user.username, req.auth_id);
         trace!("verify_authentication reply: {:?}", reply);
         Ok(Response::new(reply))
     }

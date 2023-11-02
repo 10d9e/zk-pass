@@ -151,15 +151,6 @@ fn hash_or_randomize_secret<T: ByteConvertible<T> + RandomGenerator<T>>(
 async fn main() -> Result<(), Box<dyn Error>> {
     let opt = Opt::from_args(); // Parses command-line arguments.
 
-    // Parses group parameters for Discrete Log and Elliptic Curve implementations.
-    let dl_params = GroupParams::<BigUint>::from_str(&opt.modp.to_string()).map_err(|_| {
-        "Invalid discrete log group parameters provided in command-line arguments".to_string()
-    })?;
-    let ec_params =
-        GroupParams::<RistrettoPoint>::from_str(&opt.curve.to_string()).map_err(|_| {
-            "Invalid elliptic curve group parameters provided in command-line arguments".to_string()
-        })?;
-
     // Displays initial client information.
     println!("🔥 Starting ZK_PASS client 🔥");
     println!("      🤖 host: {}", opt.host);
@@ -179,6 +170,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     match opt.r#type {
         ChaumPedersenType::DiscreteLog => {
             // Executes the discrete log version of the protocol
+            // Parses group parameters for Discrete Log and Elliptic Curve implementations.
+            let dl_params = GroupParams::<BigUint>::from_str(&opt.modp.to_string()).map_err(|_| {
+                "Invalid discrete log group parameters provided in command-line arguments".to_string()
+            })?;
+
             execute_protocol::<DiscreteLogChaumPedersen, _, _>(
                 &dl_params,
                 &hash_or_randomize_secret(opt.secret.as_ref()),
@@ -189,6 +185,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
         ChaumPedersenType::EllipticCurve => {
             // Executes the elliptic curve version of the protocol
+            let ec_params = GroupParams::<RistrettoPoint>::from_str(&opt.curve.to_string()).map_err(|_| {
+                "Invalid elliptic curve group parameters provided in command-line arguments".to_string()
+            })?;
+
             execute_protocol::<EllipticCurveChaumPedersen, _, _>(
                 &ec_params,
                 &hash_or_randomize_secret(opt.secret.as_ref()),

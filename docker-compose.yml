@@ -1,15 +1,29 @@
-# docker-compose.yml
-version: '3'
+version: '3.8'
 services:
   server:
     build:
-      context: .
+      context: docker
       dockerfile: Dockerfile.server
     ports:
       - "50051:50051"
+    environment:
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=50051
+      - SERVER_TYPE=discrete_log
+      # - SERVER_CURVE=ec25519
+      - SERVER_MODP=rfc5114_modp_1024_160
+
   client:
     build:
-      context: .
+      context: docker
       dockerfile: Dockerfile.client
     depends_on:
       - server
+    environment:
+      - CLIENT_HOST=server
+      - CLIENT_PORT=50051
+      - CLIENT_TYPE=discrete_log
+      # - CLIENT_CURVE=ec25519
+      - CLIENT_MODP=rfc5114_modp_1024_160
+      - CLIENT_USER=alice
+      - CLIENT_SECRET=i_love_bob
