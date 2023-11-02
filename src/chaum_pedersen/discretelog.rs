@@ -105,15 +105,16 @@ impl ChaumPedersen for DiscreteLogChaumPedersen {
         params: &Self::GroupParameters, s: &Self::Response, c: &Self::Challenge,
         cp: &Self::CommitParameters,
     ) -> bool {
-        let (y1, y2, r1, r2) = (cp.0.clone(), cp.1.clone(), cp.2.clone(), cp.3.clone());
+        let (y1, y2, r1, r2) = cp;
 
         let lhs1 = params.g.modpow(s, &params.p);
-        let rhs1 = (&r1 * y1.modpow(&(&params.p - c - BigUint::one()), &params.p)) % &params.p;
+        let rhs1 = (r1 * y1.modpow(&(&params.p - c - BigUint::one()), &params.p)) % &params.p;
         let lhs2 = params.h.modpow(s, &params.p);
-        let rhs2 = (&r2 * y2.modpow(&(&params.p - c - BigUint::one()), &params.p)) % &params.p;
+        let rhs2 = (r2 * y2.modpow(&(&params.p - c - BigUint::one()), &params.p)) % &params.p;
 
         lhs1 == rhs1 && lhs2 == rhs2
     }
+
 }
 
 #[cfg(test)]

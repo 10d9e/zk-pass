@@ -1,8 +1,7 @@
 use curve25519_dalek::ristretto::CompressedRistretto;
 use curve25519_dalek::{RistrettoPoint, Scalar};
-use log::error;
 use num_bigint::BigUint;
-use std::io::Error;
+use std::error::Error;
 
 /// A trait for converting types to and from byte representations.
 ///
@@ -28,9 +27,7 @@ pub trait ByteConvertible<T> {
     /// # Returns
     /// A `Result` which is `Ok` containing the constructed object if successful,
     /// or an `Err` containing an error if the conversion failed.
-    fn from_bytes(bytes: &[u8]) -> Result<T, Box<dyn std::error::Error>>
-    where
-        Self: Sized;
+    fn from_bytes(bytes: &[u8]) -> Result<T, Box<dyn Error>> where Self: Sized;
 }
 
 /// Implementation of `ByteConvertible` for `BigUint`.
@@ -42,7 +39,7 @@ impl ByteConvertible<BigUint> for BigUint {
         t.to_bytes_be()
     }
 
-    fn from_bytes(bytes: &[u8]) -> Result<BigUint, Box<dyn std::error::Error>> {
+    fn from_bytes(bytes: &[u8]) -> Result<BigUint, Box<dyn Error>> {
         Ok(BigUint::from_bytes_be(bytes))
     }
 }
@@ -57,17 +54,14 @@ impl ByteConvertible<RistrettoPoint> for RistrettoPoint {
         t.compress().to_bytes().to_vec()
     }
 
-    fn from_bytes(bytes: &[u8]) -> Result<RistrettoPoint, Box<dyn std::error::Error>> {
-        match CompressedRistretto::from_slice(bytes)?.decompress() {
-            Some(p) => Ok(p),
-            None => {
-                error!("Failed to decompress RistrettoPoint");
-                Err(Box::new(Error::new(
-                    std::io::ErrorKind::Other,
-                    "Failed to decompress RistrettoPoint",
-                )))
-            }
-        }
+    fn from_bytes(bytes: &[u8]) -> Result<RistrettoPoint, Box<dyn Error>> {
+        let compressed = CompressedRistretto::from_slice(bytes);
+        compressed?.decompress().ok_or_else(|| {
+            Box::new(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "Failed to decompress RistrettoPoint",
+            )) as Box<dyn Error>
+        })
     }
 }
 
@@ -81,8 +75,14 @@ impl ByteConvertible<Scalar> for Scalar {
         t.to_bytes().to_vec()
     }
 
-    fn from_bytes(bytes: &[u8]) -> Result<Scalar, Box<dyn std::error::Error>> {
-        Ok(Scalar::from_bytes_mod_order(bytes.try_into()?))
+    fn from_bytes(bytes: &[u8]) -> Result<Scalar, Box<dyn Error>> {
+        let array: [u8; 32] = bytes.try_into().map_err(|_| {
+            Box::new(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "Invalid bytes length for Scalar",
+            )) as Box<dyn Error>
+        })?;
+        Ok(Scalar::from_bytes_mod_order(array))
     }
 }
 

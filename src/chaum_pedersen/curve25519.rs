@@ -114,8 +114,7 @@ impl ChaumPedersen for EllipticCurveChaumPedersen {
         cp: &Self::CommitParameters,
     ) -> bool {
         // Deconstructing the commitment parameters tuple.
-        let (y1, y2, r1, r2) = (cp.0.clone(), cp.1.clone(), cp.2.clone(), cp.3.clone());
-
+        let (y1, y2, r1, r2) = cp;
         // Verifying the proof by checking two equations.
         (params.g * s == r1 + (y1 * c)) && (params.h * s == r2 + (y2 * c))
     }
@@ -262,8 +261,6 @@ mod test {
             .unwrap()
             .decompress()
             .expect("Invalid point received");
-
-        println!("Received point: {:?}", received_point);
 
         // Asserting that the received point is equal to the original compressed point.
         assert_eq!(received_point, compressed_point);

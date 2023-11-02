@@ -1,8 +1,9 @@
-use crate::conversion::ByteConvertible;
 use curve25519_dalek::RistrettoPoint;
 use curve25519_dalek::Scalar;
 use num_bigint::BigUint;
+use std::error::Error;
 use rand::RngCore;
+use rand::rngs::OsRng;
 
 /// Defines a trait for generating random values of a given type.
 ///
@@ -17,7 +18,7 @@ pub trait RandomGenerator<T> {
     ///
     /// # Errors
     /// Returns an error if the random value generation fails.
-    fn generate_random() -> Result<T, Box<dyn std::error::Error>>;
+    fn generate_random() -> Result<T, Box<dyn Error>>;
 }
 
 // Implementation of `RandomGenerator` trait for `BigUint`.
@@ -30,14 +31,10 @@ impl RandomGenerator<BigUint> for BigUint {
     /// # Errors
     /// Returns an error if the conversion from bytes to `BigUint` fails.
     fn generate_random() -> Result<BigUint, Box<dyn std::error::Error>> {
-        let mut rng = rand::thread_rng();
-        let mut bytes = vec![0u8; 32];
+        let mut rng = OsRng;
+        let mut bytes = [0u8; 32];
         rng.fill_bytes(&mut bytes);
-
-        //let mut rng = OsRng;
-        //rng.gen_biguint_below(&params.p)
-
-        BigUint::from_bytes(&bytes)
+        Ok(BigUint::from_bytes_be(&bytes))
     }
 }
 
@@ -50,11 +47,8 @@ impl RandomGenerator<Scalar> for Scalar {
     ///
     /// # Errors
     /// Returns an error if the conversion from bytes to `Scalar` fails.
-    fn generate_random() -> Result<Scalar, Box<dyn std::error::Error>> {
-        let mut rng = rand::thread_rng();
-        let mut bytes = vec![0u8; 32];
-        rng.fill_bytes(&mut bytes);
-        Scalar::from_bytes(&bytes)
+    fn generate_random() -> Result<Scalar, Box<dyn Error>> {
+        Ok(Scalar::random(&mut OsRng))
     }
 }
 
@@ -68,9 +62,6 @@ impl RandomGenerator<RistrettoPoint> for RistrettoPoint {
     /// # Errors
     /// Returns an error if the conversion from bytes to `RistrettoPoint` fails.
     fn generate_random() -> Result<RistrettoPoint, Box<dyn std::error::Error>> {
-        let mut rng = rand::thread_rng();
-        let mut bytes = vec![0u8; 32];
-        rng.fill_bytes(&mut bytes);
-        RistrettoPoint::from_bytes(&bytes)
+        Ok(RistrettoPoint::random(&mut OsRng))
     }
 }

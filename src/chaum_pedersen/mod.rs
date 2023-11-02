@@ -10,6 +10,8 @@ pub mod discretelog;
 /// A module dedicated to testing various components of the application. It includes test cases, utility functions for testing, and other resources needed to ensure the correctness and reliability of the system.
 pub mod test;
 
+// pub mod secp256k;
+
 /// A struct representing group parameters in cryptographic protocols.
 ///
 /// This struct is generic over a type `T`, allowing flexibility in the types of the parameters.
