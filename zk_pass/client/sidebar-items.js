@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["zkp_auth"],"struct":["AuthClientLib"]};
+window.SIDEBAR_ITEMS = {"fn":["execute_protocol"],"mod":["zkp_auth"],"struct":["AuthClientLib"]};

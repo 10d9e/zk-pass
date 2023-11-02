@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["execute_protocol"]};
+window.SIDEBAR_ITEMS = {"fn":["test_execute_protocol"]};

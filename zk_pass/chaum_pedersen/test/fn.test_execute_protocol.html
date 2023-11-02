@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Executes the Chaum-Pedersen protocol using a generic implementation."><title>test_execute_protocol in zk_pass::chaum_pedersen::test - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="zk_pass" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../../zk_pass/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../../zk_pass/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><div class="sidebar-elems"><h2><a href="index.html">In zk_pass::chaum_pedersen::test</a></h2></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Function <a href="../../index.html">zk_pass</a>::<wbr><a href="../index.html">chaum_pedersen</a>::<wbr><a href="index.html">test</a>::<wbr><a class="fn" href="#">test_execute_protocol</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../../src/zk_pass/chaum_pedersen/test.rs.html#46-63">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><code>pub fn test_execute_protocol&lt;T&gt;(
+    params: &amp;T::<a class="associatedtype" href="../trait.ChaumPedersen.html#associatedtype.GroupParameters" title="type zk_pass::chaum_pedersen::ChaumPedersen::GroupParameters">GroupParameters</a>,
+    x: &amp;T::<a class="associatedtype" href="../trait.ChaumPedersen.html#associatedtype.Secret" title="type zk_pass::chaum_pedersen::ChaumPedersen::Secret">Secret</a>
+) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.73.0/std/primitive.bool.html">bool</a><span class="where fmt-newline">where
+    T: <a class="trait" href="../trait.ChaumPedersen.html" title="trait zk_pass::chaum_pedersen::ChaumPedersen">ChaumPedersen</a>,</span></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Executes the Chaum-Pedersen protocol using a generic implementation.</p>
+<p>This function demonstrates a typical execution flow of the Chaum-Pedersen
+cryptographic protocol. It encapsulates the roles of both the client and
+the server, illustrating the generation of commitment, challenge, response,
+and the verification process.</p>
+<p>The function is generic over a type <code>T</code> that implements the <code>ChaumPedersen</code>
+trait, allowing it to work with any specific cryptographic scheme that
+conforms to the protocol.</p>
+<h2 id="arguments"><a href="#arguments">Arguments</a></h2>
+<ul>
+<li><code>params</code> - Reference to the group parameters. These parameters are essential
+for the cryptographic operations and depend on the specific implementation
+of the Chaum-Pedersen protocol.</li>
+<li><code>x</code> - Reference to the secret value. This is the secret that the client
+wants to prove knowledge of without revealing it.</li>
+</ul>
+<h2 id="type-parameters"><a href="#type-parameters">Type Parameters</a></h2>
+<ul>
+<li><code>T</code> - A type that implements the <code>ChaumPedersen</code> trait. This type dictates
+the specifics of the cryptographic operations used in the protocol.</li>
+</ul>
+<h2 id="returns"><a href="#returns">Returns</a></h2>
+<p>Returns a boolean indicating whether the verification was successful. A value
+of <code>true</code> means that the client successfully proved knowledge of the secret
+without revealing it, while <code>false</code> indicates a failure in the protocol execution.</p>
+<h2 id="example"><a href="#example">Example</a></h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Assume `DiscreteLogChaumPedersen` implements `ChaumPedersen`.
+</span><span class="kw">use </span>zk_pass::chaum_pedersen::test::execute_protocol;
+<span class="kw">use </span>zk_pass::chaum_pedersen::discretelog::DiscreteLogChaumPedersen;
+<span class="kw">use </span>zk_pass::chaum_pedersen::constants::RFC5114_MODP_2048_256_BIT_PARAMS;
+<span class="kw">use </span>rand::rngs::OsRng;
+<span class="kw">use </span>num_bigint::RandBigInt;
+ 
+<span class="kw">let </span>params = RFC5114_MODP_2048_256_BIT_PARAMS.to_owned();
+<span class="kw">let </span><span class="kw-2">mut </span>rng = OsRng;
+<span class="kw">let </span>secret = rng.gen_biguint_below(<span class="kw-2">&amp;</span>params.p);
+
+<span class="kw">let </span>result = test_execute_protocol::&lt;DiscreteLogChaumPedersen&gt;(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>secret);
+<span class="macro">assert_eq!</span>(result, <span class="bool-val">true</span>);</code></pre></div>
+</div></details></section></div></main></body></html>
