@@ -201,7 +201,6 @@
 <a href="#201" id="201">201</a>
 <a href="#202" id="202">202</a>
 <a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>curve25519_dalek::RistrettoPoint;
 <span class="kw">use </span>num_bigint::BigUint;
 <span class="kw">use </span>sha2::{Digest, Sha512};
@@ -374,10 +373,9 @@
     } <span class="kw">else </span>{
         <span class="macro">println!</span>(<span class="string">&quot;      🔢 modp group: {}&quot;</span>, opt.modp)
     }
-
-    <span class="comment">//let x = hash_or_randomize_secret(opt.secret.as_ref()); // Generates a secret value for the protocol.
-
-    // Establishes a connection to the ZKPass server.
+    <span class="macro">println!</span>(<span class="string">&quot;      🔑 user: {}&quot;</span>, opt.user);
+    
+    <span class="comment">// Establishes a connection to the ZKPass server.
     </span><span class="kw">let </span><span class="kw-2">mut </span>client = AuthClientLib::connect(<span class="macro">format!</span>(<span class="string">&quot;http://{}:{}&quot;</span>, opt.host, opt.port)).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="comment">// Executes the selected Chaum-Pedersen protocol.
