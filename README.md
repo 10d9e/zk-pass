@@ -54,6 +54,61 @@ Note: This table shows a subset of possible combinations focusing on `type`, `cu
    🔑 Authentication successful! 🔑
    Session ID: 97f6e2e1-19d5-404e-ad03-aa3a96d10fc1
    ```
+4. **Read about more configuration options by asking for --help**
+
+  **Server:**
+   ```bash
+   ❯ ./target/release/server --help
+   server 0.1.0
+   A server for the ZKPass Chaum-Pedersen protocol service
+   
+   USAGE:
+       server [OPTIONS]
+   
+   FLAGS:
+           --help       Prints help information
+       -V, --version    Prints version information
+   
+   OPTIONS:
+       -c, --curve <curve>    Command line option to set the elliptic curve type. Required if the stereotype is set to
+                              "elliptic_curve" [default: ec25519]  [possible values: ec25519]
+       -h, --host <host>      Command line option to set the host address for the server. Defaults to "[::1]" if not
+                              specified [default: [::1]]
+       -m, --modp <modp>      Command line option to set the type of the RFC log group to use. Required if the stereotype
+                              is set to "discrete_log" [default: rfc5114_modp_1024_160]  [possible values:
+                              rfc5114_modp_1024_160, rfc5114_modp_2048_224, rfc5114_modp_2048_256]
+       -p, --port <port>      Command line option to set the port for the server. Defaults to 50051 if not specified
+                              [default: 50051]
+       -t, --type <type>      Command line option to set the underlying type of the Chaum-Pedersen protocol to use
+                              [default: discrete_log]  [possible values: discrete_log, elliptic_curve]
+   ```
+
+   **Client:**
+   ```bash
+   ❯ ./target/release/client --help
+   client 0.1.0
+   A client for the ZKPass server
+   
+   USAGE:
+       client [OPTIONS]
+   
+   FLAGS:
+           --help       Prints help information
+       -V, --version    Prints version information
+   
+   OPTIONS:
+       -c, --curve <curve>      Elliptic curve type for the Elliptic Curve implementation of Chaum-Pedersen [default:
+                                ec25519]  [possible values: ec25519]
+       -h, --host <host>        The host address of the ZKPass server [default: [::1]]
+       -m, --modp <modp>        Type of RFC log group to use for the Discrete Log implementation of Chaum-Pedersen
+                                [default: rfc5114_modp_1024_160]  [possible values: rfc5114_modp_1024_160,
+                                rfc5114_modp_2048_224, rfc5114_modp_2048_256]
+       -p, --port <port>        The port number to connect to the ZKPass server [default: 50051]
+       -s, --secret <secret>    Optional secret passcode for authentication
+       -t, --type <type>        Underlying type of the Chaum-Pedersen protocol to use [default: discrete_log]  [possible
+                                values: discrete_log, elliptic_curve]
+       -u, --user <user>        Username for identification [default: foo]
+   ```
 
 ## Installation
 Ensure that the ZKPass server application is installed on your system. If it's not already installed, follow the provided installation instructions.
