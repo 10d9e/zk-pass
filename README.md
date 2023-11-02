@@ -1,4 +1,4 @@
-# User Guide for ZKPass Server
+# ZKPass Server
 
 ## Overview
 The ZKPass server is a command-line application that facilitates the ZKPass Chaum-Pedersen protocol service. It offers support for both Discrete Log and Elliptic Curve implementations of the protocol.
