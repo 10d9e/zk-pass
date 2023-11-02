@@ -1,4 +1,4 @@
-# ZKPass Server
+# ZKPass 🔑
 
 [![build-badge](https://github.com/jlogelin/zk_pass/actions/workflows/build.yml/badge.svg)](https://nightly.link/jlogelin/zk_pass/workflows/build/main/binaries.zip)
 [![document-badge](https://github.com/jlogelin/zk_pass/actions/workflows/doc.yml/badge.svg)](https://jlogelin.github.io/zk_pass)
