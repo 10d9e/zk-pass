@@ -111,14 +111,14 @@
     </span>T: ChaumPedersen,
 {
     <span class="comment">// The client calculates the commitment using their secret and the group parameters.
-    </span><span class="kw">let </span>(cp, k) = T::calculate_commitment(params, x);
+    </span><span class="kw">let </span>(cp, k) = T::commitment(params, x);
 
     <span class="comment">// The server (simulated here) sends a challenge to the client.
     </span><span class="kw">let </span>c = T::challenge(params);
 
     <span class="comment">// The client calculates the response based on the commitment random, challenge,
     // and their secret.
-    </span><span class="kw">let </span>s = T::calculate_response(params, <span class="kw-2">&amp;</span>k, <span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>x);
+    </span><span class="kw">let </span>s = T::challenge_response(params, <span class="kw-2">&amp;</span>k, <span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>x);
 
     <span class="comment">// The server (simulated here) verifies the response against the challenge and
     // commitment parameters.

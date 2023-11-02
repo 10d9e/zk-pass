@@ -264,7 +264,7 @@
     /// * A tuple of commitments (`y1`, `y2`, `r1`, `r2`), where `y1` and `y2` are the actual commitments
     ///   and `r1` and `r2` are the random commitments.
     /// * The random value `k` used in the commitment calculations.
-    </span><span class="kw">fn </span>calculate_commitment(
+    </span><span class="kw">fn </span>commitment(
         params: <span class="kw-2">&amp;</span><span class="self">Self</span>::GroupParameters, x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Secret,
     ) -&gt; (<span class="self">Self</span>::CommitParameters, <span class="self">Self</span>::CommitmentRandom)
     <span class="kw">where
@@ -300,7 +300,7 @@
     ///
     /// # Returns
     /// A `BigUint` representing the challenge value.
-    </span><span class="kw">fn </span>calculate_response(
+    </span><span class="kw">fn </span>challenge_response(
         params: <span class="kw-2">&amp;</span><span class="self">Self</span>::GroupParameters, k: <span class="kw-2">&amp;</span><span class="self">Self</span>::CommitmentRandom, c: <span class="kw-2">&amp;</span><span class="self">Self</span>::Challenge,
         x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Secret,
     ) -&gt; <span class="self">Self</span>::Response
@@ -364,7 +364,7 @@
             q: q.clone(),
         };
 
-        <span class="kw">let </span>(cp, _k) = DiscreteLogChaumPedersen::calculate_commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
+        <span class="kw">let </span>(cp, _k) = DiscreteLogChaumPedersen::commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
         <span class="kw">let </span>(y1, y2, r1, r2) = cp;
 
         <span class="macro">assert_eq!</span>(y1, params.g.modpow(<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>params.p));
@@ -439,7 +439,7 @@
         </span><span class="kw">let </span>x = BigUint::from(<span class="number">10u32</span>);
         <span class="kw">let </span>k = BigUint::from(<span class="number">17u32</span>);
         <span class="kw">let </span>c = BigUint::from(<span class="number">0u32</span>);
-        <span class="kw">let </span>s = DiscreteLogChaumPedersen::calculate_response(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>k, <span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>x);
+        <span class="kw">let </span>s = DiscreteLogChaumPedersen::challenge_response(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>k, <span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>x);
         <span class="macro">println!</span>(<span class="string">&quot;Response: {:?}&quot;</span>, s);
 
         <span class="comment">// server verifies

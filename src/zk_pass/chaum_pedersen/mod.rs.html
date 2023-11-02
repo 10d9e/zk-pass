@@ -157,7 +157,7 @@
     ///
     /// # Returns
     /// A tuple containing the commitment parameters and the commitment randomness.
-    </span><span class="kw">fn </span>calculate_commitment(
+    </span><span class="kw">fn </span>commitment(
         params: <span class="kw-2">&amp;</span><span class="self">Self</span>::GroupParameters, x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Secret,
     ) -&gt; (<span class="self">Self</span>::CommitParameters, <span class="self">Self</span>::CommitmentRandom)
     <span class="kw">where
@@ -174,7 +174,7 @@
     <span class="kw">where
         </span><span class="self">Self</span>: Sized;
 
-    <span class="doccomment">/// Calculates the response in the Chaum-Pedersen protocol.
+    <span class="doccomment">/// Calculates the challenge response in the Chaum-Pedersen protocol.
     ///
     /// # Arguments
     /// * `params` - Group parameters used in the protocol.
@@ -184,7 +184,7 @@
     ///
     /// # Returns
     /// The response value in the protocol.
-    </span><span class="kw">fn </span>calculate_response(
+    </span><span class="kw">fn </span>challenge_response(
         params: <span class="kw-2">&amp;</span><span class="self">Self</span>::GroupParameters, k: <span class="kw-2">&amp;</span><span class="self">Self</span>::CommitmentRandom, c: <span class="kw-2">&amp;</span><span class="self">Self</span>::Challenge,
         x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Secret,
     ) -&gt; <span class="self">Self</span>::Response

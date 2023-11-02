@@ -298,7 +298,7 @@
     S: ByteConvertible&lt;S&gt;,
 {
     <span class="comment">// Client calculates the commitment.
-    </span><span class="kw">let </span>((y1, y2, r1, r2), k) = T::calculate_commitment(params, x);
+    </span><span class="kw">let </span>((y1, y2, r1, r2), k) = T::commitment(params, x);
 
     <span class="comment">// Registers the commitment with the server.
     </span>client
@@ -314,7 +314,7 @@
     </span><span class="kw">let </span>challenge = S::from_bytes(<span class="kw-2">&amp;</span>c)<span class="question-mark">?</span>;
 
     <span class="comment">// Calculates the response to the challenge.
-    </span><span class="kw">let </span>s = T::calculate_response(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>k, <span class="kw-2">&amp;</span>challenge, <span class="kw-2">&amp;</span>x);
+    </span><span class="kw">let </span>s = T::challenge_response(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>k, <span class="kw-2">&amp;</span>challenge, <span class="kw-2">&amp;</span>x);
 
     <span class="comment">// Sends the response to the server and receives a session ID.
     </span><span class="kw">let </span>session_id = client
