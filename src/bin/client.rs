@@ -150,7 +150,6 @@ fn hash_or_randomize_secret<T: ByteConvertible<T> + RandomGenerator<T>>(
 /// Remember to replace the values in the command with those suitable for your setup, and that the server must be serving the same protocol (type, modp, curve) as the client.
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let mut rng = OsRng; // Initializes a cryptographically secure random number generator.
     let opt = Opt::from_args(); // Parses command-line arguments.
 
     // Parses group parameters for Discrete Log and Elliptic Curve implementations.
