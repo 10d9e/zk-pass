@@ -228,6 +228,22 @@
 <a href="#228" id="228">228</a>
 <a href="#229" id="229">229</a>
 <a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>curve25519_dalek::RistrettoPoint;
 <span class="kw">use </span>num_bigint::BigUint;
 <span class="kw">use </span>sha2::{Digest, Sha512};
@@ -236,12 +252,12 @@
 <span class="kw">use </span>strum::VariantNames;
 <span class="kw">use </span>zk_pass::conversion::ByteConvertible;
 
-<span class="kw">use </span>pasta_curves::pallas::Point;
+<span class="kw">use </span>pasta_curves::pallas::Point <span class="kw">as </span>PallasPoint;
+<span class="kw">use </span>pasta_curves::vesta::Point <span class="kw">as </span>VestaPoint;
 <span class="kw">use </span>std::error::Error;
-<span class="kw">use </span>zk_pass::chaum_pedersen::constants::PALLAS_GROUP_PARAMS;
 <span class="kw">use </span>zk_pass::chaum_pedersen::{
     curve25519::Curve25519ChaumPedersen, discretelog::DiscreteLogChaumPedersen,
-    pallas::PallasCurveChaumPedersen, GroupParams,
+    pallas::PallasCurveChaumPedersen, vesta::VestaCurveChaumPedersen, GroupParams,
 };
 <span class="kw">use </span>zk_pass::client::execute_protocol;
 <span class="kw">use </span>zk_pass::client::AuthClientLib;
@@ -440,13 +456,29 @@
                     .<span class="kw">await
                 </span>}
                 EllipticCurveType::Pallas =&gt; {
-                    <span class="kw">let </span>ec_params = GroupParams::&lt;Point&gt;::from_str(<span class="kw-2">&amp;</span>opt.curve.to_string())
+                    <span class="kw">let </span>ec_params = GroupParams::&lt;PallasPoint&gt;::from_str(<span class="kw-2">&amp;</span>opt.curve.to_string())
                     .map_err(|<span class="kw">_</span>| {
                         <span class="string">&quot;Invalid elliptic curve group parameters provided in command-line arguments&quot;
                             </span>.to_string()
                     })<span class="question-mark">?</span>;
                     <span class="comment">// Executes the elliptic curve version of the protocol
                     </span>execute_protocol::&lt;PallasCurveChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;(
+                        <span class="kw-2">&amp;</span>ec_params,
+                        <span class="kw-2">&amp;</span>hash_or_randomize_secret(opt.secret.as_ref()),
+                        <span class="kw-2">&amp;</span>opt.user,
+                        client,
+                    )
+                    .<span class="kw">await
+                </span>}
+
+                EllipticCurveType::Vesta =&gt; {
+                    <span class="kw">let </span>ec_params = GroupParams::&lt;VestaPoint&gt;::from_str(<span class="kw-2">&amp;</span>opt.curve.to_string())
+                    .map_err(|<span class="kw">_</span>| {
+                        <span class="string">&quot;Invalid elliptic curve group parameters provided in command-line arguments&quot;
+                            </span>.to_string()
+                    })<span class="question-mark">?</span>;
+                    <span class="comment">// Executes the elliptic curve version of the protocol
+                    </span>execute_protocol::&lt;VestaCurveChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;(
                         <span class="kw-2">&amp;</span>ec_params,
                         <span class="kw-2">&amp;</span>hash_or_randomize_secret(opt.secret.as_ref()),
                         <span class="kw-2">&amp;</span>opt.user,

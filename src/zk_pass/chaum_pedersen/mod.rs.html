@@ -105,6 +105,10 @@
 <a href="#105" id="105">105</a>
 <a href="#106" id="106">106</a>
 <a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
 </pre></div><pre class="rust"><code><span class="doccomment">/// This module defines various constants used throughout the application. These may include cryptographic constants, default values, or other static data that are integral to the operation of the system.
 </span><span class="kw">pub mod </span>constants;
 
@@ -117,7 +121,11 @@
 <span class="doccomment">/// A module dedicated to testing various components of the application. It includes test cases, utility functions for testing, and other resources needed to ensure the correctness and reliability of the system.
 </span><span class="kw">pub mod </span>test;
 
-<span class="kw">pub mod </span>pallas;
+<span class="doccomment">/// This module provides functionality related to the Pallas elliptic curve, often used in cryptographic operations, particularly in the elliptic curve implementation of the Chaum-Pedersen protocol.
+</span><span class="kw">pub mod </span>pallas;
+
+<span class="doccomment">/// This module provides functionality related to the Vesta elliptic curve, often used in cryptographic operations, particularly in the elliptic curve implementation of the Chaum-Pedersen protocol.
+</span><span class="kw">pub mod </span>vesta;
 
 <span class="doccomment">/// A struct representing group parameters in cryptographic protocols.
 ///

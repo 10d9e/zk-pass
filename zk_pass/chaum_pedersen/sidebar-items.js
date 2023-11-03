@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["constants","curve25519","discretelog","pallas","test"],"struct":["GroupParams"],"trait":["ChaumPedersen"]};
+window.SIDEBAR_ITEMS = {"mod":["constants","curve25519","discretelog","pallas","test","vesta"],"struct":["GroupParams"],"trait":["ChaumPedersen"]};

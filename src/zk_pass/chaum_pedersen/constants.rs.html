@@ -138,13 +138,46 @@
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
 </pre></div><pre class="rust"><code><span class="kw">use crate</span>::{chaum_pedersen::GroupParams, conversion::ByteConvertible};
 <span class="kw">use </span>curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
 <span class="kw">use </span>curve25519_dalek::RistrettoPoint;
 <span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>num_bigint::BigUint;
-<span class="kw">use </span>pasta_curves::pallas::Point;
 <span class="kw">use </span>std::str::FromStr;
+<span class="kw">use </span>pasta_curves::pallas::Point <span class="kw">as </span>PallasPoint;
+<span class="kw">use </span>pasta_curves::vesta::Point <span class="kw">as </span>VestaPoint;
 
 <span class="comment">// RFC5114_GROUP_PARAMETERS are constant Prime Order Subgroups as defined in RFC5114
 // Reference: https://www.rfc-editor.org/rfc/rfc5114.html#section-2
@@ -204,20 +237,38 @@
         }
     };
 
-    <span class="kw">pub static </span><span class="kw-2">ref </span>PALLAS_GROUP_PARAMS: GroupParams&lt;Point&gt; = {
+    <span class="kw">pub static </span><span class="kw-2">ref </span>PALLAS_GROUP_PARAMS: GroupParams&lt;PallasPoint&gt; = {
         <span class="comment">//use pasta_curves::group::GroupEncoding;
-        </span>GroupParams::&lt;Point&gt; {
-            g: Point::convert_from(
+        </span>GroupParams::&lt;PallasPoint&gt; {
+            g: PallasPoint::convert_from(
                 convert(<span class="kw-2">&amp;</span>hex::decode(<span class="string">&quot;f9abd1b1a37af310baa363ed031ef5613fb474f1780dc8fc767c2b1480da582b&quot;</span>).unwrap()).unwrap()
             ).unwrap(),
-            h: Point::convert_from(
+            h: PallasPoint::convert_from(
                 convert(<span class="kw-2">&amp;</span>hex::decode(<span class="string">&quot;8f1339a6e025db7854f67838a42764b870e85e991e7b2e6570c5e5fee6e5c30c&quot;</span>).unwrap()).unwrap()
             ).unwrap(),
-            p: Point::convert_from(
-                convert(<span class="kw-2">&amp;</span>hex::decode(<span class="string">&quot;00000000ed302d991bf94c09fc98462200000000000000000000000000000040&quot;</span>).unwrap()).unwrap()
+            p: PallasPoint::convert_from(
+                convert(<span class="kw-2">&amp;</span>hex::decode(<span class="string">&quot;0000000000000000000000000000000000000000000000000000000000000000&quot;</span>).unwrap()).unwrap()
             ).unwrap(),
-            q: Point::convert_from(
-                convert(<span class="kw-2">&amp;</span>hex::decode(<span class="string">&quot;00000000ed302d991bf94c09fc98462200000000000000000000000000000040&quot;</span>).unwrap()).unwrap()
+            q: PallasPoint::convert_from(
+                convert(<span class="kw-2">&amp;</span>hex::decode(<span class="string">&quot;0000000000000000000000000000000000000000000000000000000000000000&quot;</span>).unwrap()).unwrap()
+            ).unwrap(),
+        }
+    };
+
+    <span class="kw">pub static </span><span class="kw-2">ref </span>VESTA_GROUP_PARAMS: GroupParams&lt;VestaPoint&gt; = {
+        <span class="comment">//use pasta_curves::group::GroupEncoding;
+        </span>GroupParams::&lt;VestaPoint&gt; {
+            g: VestaPoint::convert_from(
+                convert(<span class="kw-2">&amp;</span>hex::decode(<span class="string">&quot;227b13b3f09fbc6312ea3a7d150e9879fc5debc5f19e0433a0d774e7485e7ea3&quot;</span>).unwrap()).unwrap()
+            ).unwrap(),
+            h: VestaPoint::convert_from(
+                convert(<span class="kw-2">&amp;</span>hex::decode(<span class="string">&quot;33fc580619f0b5fa23a88cb6be070033cfdb0ed10aef7491d2400ea6dd45f5a6&quot;</span>).unwrap()).unwrap()
+            ).unwrap(),
+            p: VestaPoint::convert_from(
+                convert(<span class="kw-2">&amp;</span>hex::decode(<span class="string">&quot;0000000000000000000000000000000000000000000000000000000000000000&quot;</span>).unwrap()).unwrap()
+            ).unwrap(),
+            q: VestaPoint::convert_from(
+                convert(<span class="kw-2">&amp;</span>hex::decode(<span class="string">&quot;0000000000000000000000000000000000000000000000000000000000000000&quot;</span>).unwrap()).unwrap()
             ).unwrap(),
         }
     };
@@ -266,7 +317,7 @@
 }
 
 <span class="comment">//
-</span><span class="kw">impl </span>FromStr <span class="kw">for </span>GroupParams&lt;Point&gt; {
+</span><span class="kw">impl </span>FromStr <span class="kw">for </span>GroupParams&lt;PallasPoint&gt; {
     <span class="kw">type </span><span class="prelude-val">Err </span>= (); <span class="comment">// Defining the error type as a unit type.
 
     // Implementing the from_str method which takes a string slice and returns a Result.
@@ -278,4 +329,16 @@
         </span>}
     }
 }
-</code></pre></div></section></main></body></html>
+
+<span class="kw">impl </span>FromStr <span class="kw">for </span>GroupParams&lt;VestaPoint&gt; {
+    <span class="kw">type </span><span class="prelude-val">Err </span>= (); <span class="comment">// Defining the error type as a unit type.
+
+    // Implementing the from_str method which takes a string slice and returns a Result.
+    </span><span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
+        <span class="kw">match </span>s {
+            <span class="comment">// Matching the string &quot;ec25519&quot; and returning the corresponding group parameters.
+            </span><span class="string">&quot;vesta&quot; </span>=&gt; <span class="prelude-val">Ok</span>(VESTA_GROUP_PARAMS.to_owned()),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(()), <span class="comment">// Returning an error for unrecognized strings.
+        </span>}
+    }
+}</code></pre></div></section></main></body></html>
