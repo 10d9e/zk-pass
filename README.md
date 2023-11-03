@@ -15,6 +15,7 @@ The following table shows the possible combinations of client and server configu
 | discrete_log      | rfc5114_modp_2048_224   | N/A          | discrete_log      | rfc5114_modp_2048_224   | N/A          |
 | discrete_log      | rfc5114_modp_2048_256   | N/A          | discrete_log      | rfc5114_modp_2048_256   | N/A          |
 | elliptic_curve    | N/A                     | ec25519      | elliptic_curve    | N/A                     | ec25519      |
+| elliptic_curve    | N/A                     | pallas       | elliptic_curve    | N/A                     | pallas       |
 
 Note: This table shows a subset of possible combinations focusing on `type`, `curve`, and `modp` options as they must match between the server and client.
 
