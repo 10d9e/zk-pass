@@ -205,6 +205,29 @@
 <a href="#205" id="205">205</a>
 <a href="#206" id="206">206</a>
 <a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>curve25519_dalek::RistrettoPoint;
 <span class="kw">use </span>num_bigint::BigUint;
 <span class="kw">use </span>sha2::{Digest, Sha512};
@@ -213,9 +236,12 @@
 <span class="kw">use </span>strum::VariantNames;
 <span class="kw">use </span>zk_pass::conversion::ByteConvertible;
 
+<span class="kw">use </span>pasta_curves::pallas::Point;
 <span class="kw">use </span>std::error::Error;
+<span class="kw">use </span>zk_pass::chaum_pedersen::constants::PALLAS_GROUP_PARAMS;
 <span class="kw">use </span>zk_pass::chaum_pedersen::{
-    curve25519::EllipticCurveChaumPedersen, discretelog::DiscreteLogChaumPedersen, GroupParams,
+    curve25519::Curve25519ChaumPedersen, discretelog::DiscreteLogChaumPedersen,
+    pallas::PallasCurveChaumPedersen, GroupParams,
 };
 <span class="kw">use </span>zk_pass::client::execute_protocol;
 <span class="kw">use </span>zk_pass::client::AuthClientLib;
@@ -299,7 +325,7 @@
             <span class="kw">let </span><span class="kw-2">mut </span>hasher = Sha512::new();
             hasher.update(s);
             <span class="kw">let </span>result = hasher.finalize();
-            T::from_bytes(<span class="kw-2">&amp;</span>result).expect(<span class="string">&quot;Failed to convert hash to target type&quot;</span>)
+            T::convert_from(<span class="kw-2">&amp;</span>result).expect(<span class="string">&quot;Failed to convert hash to target type&quot;</span>)
         }
         <span class="prelude-val">None </span>=&gt; T::generate_random().expect(<span class="string">&quot;Failed to generate random value&quot;</span>),
     }
@@ -372,44 +398,64 @@
 
     <span class="comment">// Establishes a connection to the ZKPass server.
     </span><span class="kw">let </span><span class="kw-2">mut </span>client = AuthClientLib::connect(<span class="macro">format!</span>(<span class="string">&quot;http://{}:{}&quot;</span>, opt.host, opt.port)).<span class="kw">await</span><span class="question-mark">?</span>;
+    execute_selected_protocol(opt, <span class="kw-2">&amp;mut </span>client).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(())
+}
 
+<span class="kw">async fn </span>execute_selected_protocol(
+    opt: Opt, client: <span class="kw-2">&amp;mut </span>AuthClientLib,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
     <span class="comment">// Executes the selected Chaum-Pedersen protocol.
     </span><span class="kw">match </span>opt.r#type {
         ChaumPedersenType::DiscreteLog =&gt; {
-            <span class="comment">// Executes the discrete log version of the protocol
-            // Parses group parameters for Discrete Log and Elliptic Curve implementations.
-            </span><span class="kw">let </span>dl_params =
+            <span class="kw">let </span>dl_params =
                 GroupParams::&lt;BigUint&gt;::from_str(<span class="kw-2">&amp;</span>opt.modp.to_string()).map_err(|<span class="kw">_</span>| {
                     <span class="string">&quot;Invalid discrete log group parameters provided in command-line arguments&quot;
                         </span>.to_string()
                 })<span class="question-mark">?</span>;
-
-            execute_protocol::&lt;DiscreteLogChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;(
+            <span class="comment">// Executes the discrete log version of the protocol
+            </span>execute_protocol::&lt;DiscreteLogChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;(
                 <span class="kw-2">&amp;</span>dl_params,
                 <span class="kw-2">&amp;</span>hash_or_randomize_secret(opt.secret.as_ref()),
                 <span class="kw-2">&amp;</span>opt.user,
-                <span class="kw-2">&amp;mut </span>client,
+                client,
             )
-            .<span class="kw">await</span><span class="question-mark">?</span>;
-        }
+            .<span class="kw">await
+        </span>}
         ChaumPedersenType::EllipticCurve =&gt; {
-            <span class="comment">// Executes the elliptic curve version of the protocol
-            </span><span class="kw">let </span>ec_params = GroupParams::&lt;RistrettoPoint&gt;::from_str(<span class="kw-2">&amp;</span>opt.curve.to_string())
-                .map_err(|<span class="kw">_</span>| {
-                    <span class="string">&quot;Invalid elliptic curve group parameters provided in command-line arguments&quot;
-                        </span>.to_string()
-                })<span class="question-mark">?</span>;
-
-            execute_protocol::&lt;EllipticCurveChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;(
-                <span class="kw-2">&amp;</span>ec_params,
-                <span class="kw-2">&amp;</span>hash_or_randomize_secret(opt.secret.as_ref()),
-                <span class="kw-2">&amp;</span>opt.user,
-                <span class="kw-2">&amp;mut </span>client,
-            )
-            .<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="kw">match </span>opt.curve {
+                EllipticCurveType::Ec25519 =&gt; {
+                    <span class="kw">let </span>ec_params = GroupParams::&lt;RistrettoPoint&gt;::from_str(<span class="kw-2">&amp;</span>opt.curve.to_string())
+                    .map_err(|<span class="kw">_</span>| {
+                        <span class="string">&quot;Invalid elliptic curve group parameters provided in command-line arguments&quot;
+                            </span>.to_string()
+                    })<span class="question-mark">?</span>;
+                    <span class="comment">// Executes the elliptic curve version of the protocol
+                    </span>execute_protocol::&lt;Curve25519ChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;(
+                        <span class="kw-2">&amp;</span>ec_params,
+                        <span class="kw-2">&amp;</span>hash_or_randomize_secret(opt.secret.as_ref()),
+                        <span class="kw-2">&amp;</span>opt.user,
+                        client,
+                    )
+                    .<span class="kw">await
+                </span>}
+                EllipticCurveType::Pallas =&gt; {
+                    <span class="kw">let </span>ec_params = GroupParams::&lt;Point&gt;::from_str(<span class="kw-2">&amp;</span>opt.curve.to_string())
+                    .map_err(|<span class="kw">_</span>| {
+                        <span class="string">&quot;Invalid elliptic curve group parameters provided in command-line arguments&quot;
+                            </span>.to_string()
+                    })<span class="question-mark">?</span>;
+                    <span class="comment">// Executes the elliptic curve version of the protocol
+                    </span>execute_protocol::&lt;PallasCurveChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;(
+                        <span class="kw-2">&amp;</span>ec_params,
+                        <span class="kw-2">&amp;</span>hash_or_randomize_secret(opt.secret.as_ref()),
+                        <span class="kw-2">&amp;</span>opt.user,
+                        client,
+                    )
+                    .<span class="kw">await
+                </span>}
+            }
         }
     }
-
-    <span class="prelude-val">Ok</span>(())
 }
 </code></pre></div></section></main></body></html>

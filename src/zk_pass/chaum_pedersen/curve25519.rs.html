@@ -274,10 +274,10 @@
 <span class="doccomment">/// A struct representing the Chaum-Pedersen protocol specialized for elliptic curve groups.
 /// This protocol is used for demonstrating knowledge of a secret in a zero-knowledge manner.
 /// The elliptic curve used in this implementation is based on Ristretto points.
-</span><span class="kw">pub struct </span>EllipticCurveChaumPedersen {}
+</span><span class="kw">pub struct </span>Curve25519ChaumPedersen {}
 
 <span class="doccomment">/// Implementing the ChaumPedersen trait for EllipticCurveChaumPedersen.
-</span><span class="kw">impl </span>ChaumPedersen <span class="kw">for </span>EllipticCurveChaumPedersen {
+</span><span class="kw">impl </span>ChaumPedersen <span class="kw">for </span>Curve25519ChaumPedersen {
     <span class="doccomment">/// Defines the type of the secret being proven. In this case, it is a scalar value.
     </span><span class="kw">type </span>Secret = Scalar;
 
@@ -434,7 +434,7 @@
         };
 
         <span class="comment">// Calculating the commitment.
-        </span><span class="kw">let </span>(cp, <span class="kw">_</span>) = EllipticCurveChaumPedersen::commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
+        </span><span class="kw">let </span>(cp, <span class="kw">_</span>) = Curve25519ChaumPedersen::commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
         <span class="kw">let </span>(y1, y2, <span class="kw">_</span>, <span class="kw">_</span>) = cp;
 
         <span class="comment">// Verifying the correctness of the commitment.
@@ -462,7 +462,7 @@
         };
 
         <span class="comment">// Executing the protocol and asserting the verification is successful.
-        </span><span class="macro">assert!</span>(test_execute_protocol::&lt;EllipticCurveChaumPedersen&gt;(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x));
+        </span><span class="macro">assert!</span>(test_execute_protocol::&lt;Curve25519ChaumPedersen&gt;(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x));
     }
 
     <span class="attr">#[test]
@@ -474,7 +474,7 @@
         </span><span class="kw">let </span>params = EC25519_GROUP_PARAMS.to_owned();
 
         <span class="comment">// Executing the protocol and asserting the verification is successful.
-        </span><span class="macro">assert!</span>(test_execute_protocol::&lt;EllipticCurveChaumPedersen&gt;(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x));
+        </span><span class="macro">assert!</span>(test_execute_protocol::&lt;Curve25519ChaumPedersen&gt;(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x));
     }
 
     <span class="attr">#[test]
@@ -484,10 +484,10 @@
         </span><span class="kw">let </span>params = EC25519_GROUP_PARAMS.to_owned();
         <span class="kw">let </span>x = Scalar::random(<span class="kw-2">&amp;mut </span>rng);
 
-        <span class="kw">let </span>(cp, <span class="kw">_</span>) = EllipticCurveChaumPedersen::commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
-        <span class="kw">let </span>c = EllipticCurveChaumPedersen::challenge(<span class="kw-2">&amp;</span>params);
+        <span class="kw">let </span>(cp, <span class="kw">_</span>) = Curve25519ChaumPedersen::commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
+        <span class="kw">let </span>c = Curve25519ChaumPedersen::challenge(<span class="kw-2">&amp;</span>params);
         <span class="kw">let </span>fake_response = Scalar::generate_random().unwrap();
-        <span class="kw">let </span>verified = EllipticCurveChaumPedersen::verify(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>fake_response, <span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>cp);
+        <span class="kw">let </span>verified = Curve25519ChaumPedersen::verify(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>fake_response, <span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>cp);
         <span class="macro">assert!</span>(!verified);
     }
 
@@ -499,10 +499,10 @@
         <span class="comment">// Creating a secret value x.
         </span><span class="kw">let </span>x = Scalar::random(<span class="kw-2">&amp;mut </span>rng);
 
-        <span class="kw">let </span>(cp, <span class="kw">_</span>) = EllipticCurveChaumPedersen::commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
-        <span class="kw">let </span>c = EllipticCurveChaumPedersen::challenge(<span class="kw-2">&amp;</span>params);
+        <span class="kw">let </span>(cp, <span class="kw">_</span>) = Curve25519ChaumPedersen::commitment(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>x);
+        <span class="kw">let </span>c = Curve25519ChaumPedersen::challenge(<span class="kw-2">&amp;</span>params);
         <span class="kw">let </span>fake_response = Scalar::generate_random().unwrap();
-        <span class="kw">let </span>verified = EllipticCurveChaumPedersen::verify(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>fake_response, <span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>cp);
+        <span class="kw">let </span>verified = Curve25519ChaumPedersen::verify(<span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>fake_response, <span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>cp);
         <span class="macro">assert!</span>(!verified);
     }
 

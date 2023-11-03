@@ -130,9 +130,64 @@
 <a href="#130" id="130">130</a>
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>curve25519_dalek::ristretto::CompressedRistretto;
 <span class="kw">use </span>curve25519_dalek::{RistrettoPoint, Scalar};
 <span class="kw">use </span>num_bigint::BigUint;
+<span class="kw">use </span>pasta_curves::group::ff::{FromUniformBytes, PrimeField};
+<span class="kw">use </span>pasta_curves::{pallas, Fq};
 <span class="kw">use </span>std::error::Error;
 
 <span class="doccomment">/// A trait for converting types to and from byte representations.
@@ -149,7 +204,7 @@
     ///
     /// # Returns
     /// A `Vec&lt;u8&gt;` representing the byte array of the object.
-    </span><span class="kw">fn </span>to_bytes(t: <span class="kw-2">&amp;</span>T) -&gt; Vec&lt;u8&gt;;
+    </span><span class="kw">fn </span>convert_to(t: <span class="kw-2">&amp;</span>T) -&gt; Vec&lt;u8&gt;;
 
     <span class="doccomment">/// Constructs an object from a byte array.
     ///
@@ -159,7 +214,7 @@
     /// # Returns
     /// A `Result` which is `Ok` containing the constructed object if successful,
     /// or an `Err` containing an error if the conversion failed.
-    </span><span class="kw">fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;T, Box&lt;<span class="kw">dyn </span>Error&gt;&gt;
+    </span><span class="kw">fn </span>convert_from(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;T, Box&lt;<span class="kw">dyn </span>Error&gt;&gt;
     <span class="kw">where
         </span><span class="self">Self</span>: Sized;
 }
@@ -169,11 +224,11 @@
 /// This implementation provides methods to convert `BigUint` objects to and from
 /// byte arrays, using big-endian byte order.
 </span><span class="kw">impl </span>ByteConvertible&lt;BigUint&gt; <span class="kw">for </span>BigUint {
-    <span class="kw">fn </span>to_bytes(t: <span class="kw-2">&amp;</span>BigUint) -&gt; Vec&lt;u8&gt; {
+    <span class="kw">fn </span>convert_to(t: <span class="kw-2">&amp;</span>BigUint) -&gt; Vec&lt;u8&gt; {
         t.to_bytes_be()
     }
 
-    <span class="kw">fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;BigUint, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
+    <span class="kw">fn </span>convert_from(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;BigUint, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
         <span class="prelude-val">Ok</span>(BigUint::from_bytes_be(bytes))
     }
 }
@@ -184,11 +239,11 @@
 /// byte arrays. It uses the compression and decompression features of the Ristretto group
 /// to achieve this.
 </span><span class="kw">impl </span>ByteConvertible&lt;RistrettoPoint&gt; <span class="kw">for </span>RistrettoPoint {
-    <span class="kw">fn </span>to_bytes(t: <span class="kw-2">&amp;</span>RistrettoPoint) -&gt; Vec&lt;u8&gt; {
+    <span class="kw">fn </span>convert_to(t: <span class="kw-2">&amp;</span>RistrettoPoint) -&gt; Vec&lt;u8&gt; {
         t.compress().to_bytes().to_vec()
     }
 
-    <span class="kw">fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;RistrettoPoint, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
+    <span class="kw">fn </span>convert_from(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;RistrettoPoint, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
         <span class="kw">let </span>compressed = CompressedRistretto::from_slice(bytes);
         compressed<span class="question-mark">?</span>.decompress().ok_or_else(|| {
             Box::new(std::io::Error::new(
@@ -205,11 +260,11 @@
 /// byte arrays. Scalars are fundamental in cryptographic operations and being able to
 /// serialize and deserialize them is crucial.
 </span><span class="kw">impl </span>ByteConvertible&lt;Scalar&gt; <span class="kw">for </span>Scalar {
-    <span class="kw">fn </span>to_bytes(t: <span class="kw-2">&amp;</span>Scalar) -&gt; Vec&lt;u8&gt; {
+    <span class="kw">fn </span>convert_to(t: <span class="kw-2">&amp;</span>Scalar) -&gt; Vec&lt;u8&gt; {
         t.to_bytes().to_vec()
     }
 
-    <span class="kw">fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;Scalar, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
+    <span class="kw">fn </span>convert_from(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;Scalar, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
         <span class="kw">let </span>array: [u8; <span class="number">32</span>] = bytes.try_into().map_err(|<span class="kw">_</span>| {
             Box::new(std::io::Error::new(
                 std::io::ErrorKind::InvalidInput,
@@ -220,37 +275,88 @@
     }
 }
 
+<span class="kw">impl </span>ByteConvertible&lt;pallas::Point&gt; <span class="kw">for </span>pallas::Point {
+    <span class="kw">fn </span>convert_to(t: <span class="kw-2">&amp;</span>pallas::Point) -&gt; Vec&lt;u8&gt; {
+        <span class="kw">use </span>pasta_curves::group::GroupEncoding;
+        t.to_bytes().to_vec()
+    }
+
+    <span class="kw">fn </span>convert_from(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;pallas::Point, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
+        <span class="kw">let </span>array: [u8; <span class="number">32</span>] = bytes.try_into().map_err(|<span class="kw">_</span>| {
+            Box::new(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                <span class="string">&quot;Invalid bytes length for Scalar&quot;</span>,
+            ))
+        })<span class="question-mark">?</span>;
+        <span class="kw">use </span>pasta_curves::group::GroupEncoding;
+        <span class="prelude-val">Ok</span>(pallas::Point::from_bytes(<span class="kw-2">&amp;</span>array).unwrap())
+    }
+}
+
+<span class="kw">impl </span>ByteConvertible&lt;pallas::Scalar&gt; <span class="kw">for </span>pallas::Scalar {
+    <span class="kw">fn </span>convert_to(t: <span class="kw-2">&amp;</span>pallas::Scalar) -&gt; Vec&lt;u8&gt; {
+        t.to_repr().as_slice().to_vec()
+    }
+
+    <span class="kw">fn </span>convert_from(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;pallas::Scalar, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
+        <span class="comment">// pad the array with zeros
+        </span><span class="kw">let </span>array = |input: <span class="kw-2">&amp;</span>[u8]| -&gt; [u8; <span class="number">64</span>] {
+            <span class="kw">let </span><span class="kw-2">mut </span>output = [<span class="number">0u8</span>; <span class="number">64</span>];
+            <span class="kw">let </span>len = input.len().min(<span class="number">64</span>);
+            output[..len].copy_from_slice(<span class="kw-2">&amp;</span>input[..len]);
+            output <span class="comment">// Return the new array
+        </span>};
+        <span class="prelude-val">Ok</span>(pallas::Scalar::from_uniform_bytes(<span class="kw-2">&amp;</span>array(bytes)))
+    }
+}
+
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::rand::RandomGenerator;
     <span class="kw">use </span>curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
     <span class="kw">use </span>num_bigint::ToBigUint;
-    <span class="kw">use </span>rand::rngs::OsRng;
 
     <span class="comment">// Test case to ensure round-trip conversion for `BigUint`.
     </span><span class="attr">#[test]
     </span><span class="kw">fn </span>biguint_conversion_round_trip() {
         <span class="kw">let </span>original = <span class="number">123456789u64</span>.to_biguint().unwrap();
-        <span class="kw">let </span>bytes = BigUint::to_bytes(<span class="kw-2">&amp;</span>original);
-        <span class="kw">let </span>recovered = BigUint::from_bytes(<span class="kw-2">&amp;</span>bytes).unwrap();
+        <span class="kw">let </span>bytes = BigUint::convert_to(<span class="kw-2">&amp;</span>original);
+        <span class="kw">let </span>recovered = BigUint::convert_from(<span class="kw-2">&amp;</span>bytes).unwrap();
         <span class="macro">assert_eq!</span>(original, recovered);
     }
 
     <span class="comment">// Test case to ensure round-trip conversion for `RistrettoPoint`.
     </span><span class="attr">#[test]
     </span><span class="kw">fn </span>ristretto_point_conversion_round_trip() {
-        <span class="kw">let </span>original = RISTRETTO_BASEPOINT_POINT * Scalar::random(<span class="kw-2">&amp;mut </span>OsRng);
-        <span class="kw">let </span>bytes = RistrettoPoint::to_bytes(<span class="kw-2">&amp;</span>original);
-        <span class="kw">let </span>recovered = RistrettoPoint::from_bytes(<span class="kw-2">&amp;</span>bytes).unwrap();
+        <span class="kw">let </span>original = RISTRETTO_BASEPOINT_POINT * Scalar::generate_random().unwrap();
+        <span class="kw">let </span>bytes = RistrettoPoint::convert_to(<span class="kw-2">&amp;</span>original);
+        <span class="kw">let </span>recovered = RistrettoPoint::convert_from(<span class="kw-2">&amp;</span>bytes).unwrap();
         <span class="macro">assert_eq!</span>(original, recovered);
     }
 
     <span class="comment">// Test case to ensure round-trip conversion for `Scalar`.
     </span><span class="attr">#[test]
     </span><span class="kw">fn </span>scalar_conversion_round_trip() {
-        <span class="kw">let </span>original = Scalar::random(<span class="kw-2">&amp;mut </span>OsRng);
-        <span class="kw">let </span>bytes = Scalar::to_bytes(<span class="kw-2">&amp;</span>original);
-        <span class="kw">let </span>recovered = Scalar::from_bytes(<span class="kw-2">&amp;</span>bytes).unwrap();
+        <span class="kw">let </span>original = Scalar::generate_random().unwrap();
+        <span class="kw">let </span>bytes = Scalar::convert_to(<span class="kw-2">&amp;</span>original);
+        <span class="kw">let </span>recovered = Scalar::convert_from(<span class="kw-2">&amp;</span>bytes).unwrap();
+        <span class="macro">assert_eq!</span>(original, recovered);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>pallas_point_conversion_round_trip() {
+        <span class="kw">let </span>original = pallas::Point::generate_random().unwrap();
+        <span class="kw">let </span>bytes = pallas::Point::convert_to(<span class="kw-2">&amp;</span>original);
+        <span class="kw">let </span>recovered = pallas::Point::convert_from(<span class="kw-2">&amp;</span>bytes).unwrap();
+        <span class="macro">assert_eq!</span>(original, recovered);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>pallas_scalar_conversion_round_trip() {
+        <span class="kw">let </span>original = pallas::Scalar::generate_random().unwrap();
+        <span class="kw">let </span>bytes = pallas::Scalar::convert_to(<span class="kw-2">&amp;</span>original);
+        <span class="kw">let </span>recovered = pallas::Scalar::convert_from(<span class="kw-2">&amp;</span>bytes).unwrap();
         <span class="macro">assert_eq!</span>(original, recovered);
     }
 
@@ -258,7 +364,7 @@
     </span><span class="attr">#[test]
     </span><span class="kw">fn </span>scalar_invalid_bytes_length() {
         <span class="kw">let </span>bytes: Vec&lt;u8&gt; = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">64</span>]; <span class="comment">// Invalid length for Scalar conversion
-        </span><span class="kw">let </span>result = Scalar::from_bytes(<span class="kw-2">&amp;</span>bytes);
+        </span><span class="kw">let </span>result = Scalar::convert_from(<span class="kw-2">&amp;</span>bytes);
         <span class="macro">assert!</span>(result.is_err());
     }
 }

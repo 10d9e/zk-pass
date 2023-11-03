@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["EllipticCurveChaumPedersen"]};
+window.SIDEBAR_ITEMS = {"struct":["Curve25519ChaumPedersen"]};
