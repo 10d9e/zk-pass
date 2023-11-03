@@ -2,8 +2,9 @@ use curve25519_dalek::ristretto::CompressedRistretto;
 use curve25519_dalek::{RistrettoPoint, Scalar};
 use num_bigint::BigUint;
 use pasta_curves::group::ff::{FromUniformBytes, PrimeField};
-use pasta_curves::{pallas, Fq};
+use pasta_curves::{pallas, vesta};
 use std::error::Error;
+use pasta_curves::group::GroupEncoding;
 
 /// A trait for converting types to and from byte representations.
 ///
@@ -92,7 +93,6 @@ impl ByteConvertible<Scalar> for Scalar {
 
 impl ByteConvertible<pallas::Point> for pallas::Point {
     fn convert_to(t: &pallas::Point) -> Vec<u8> {
-        use pasta_curves::group::GroupEncoding;
         t.to_bytes().to_vec()
     }
 
@@ -103,7 +103,7 @@ impl ByteConvertible<pallas::Point> for pallas::Point {
                 "Invalid bytes length for Scalar",
             ))
         })?;
-        use pasta_curves::group::GroupEncoding;
+        
         Ok(pallas::Point::from_bytes(&array).unwrap())
     }
 }
@@ -122,6 +122,40 @@ impl ByteConvertible<pallas::Scalar> for pallas::Scalar {
             output // Return the new array
         };
         Ok(pallas::Scalar::from_uniform_bytes(&array(bytes)))
+    }
+}
+
+impl ByteConvertible<vesta::Point> for vesta::Point {
+    fn convert_to(t: &vesta::Point) -> Vec<u8> {
+        t.to_bytes().to_vec()
+    }
+
+    fn convert_from(bytes: &[u8]) -> Result<vesta::Point, Box<dyn Error>> {
+        let array: [u8; 32] = bytes.try_into().map_err(|_| {
+            Box::new(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "Invalid bytes length for Scalar",
+            ))
+        })?;
+        
+        Ok(vesta::Point::from_bytes(&array).unwrap())
+    }
+}
+
+impl ByteConvertible<vesta::Scalar> for vesta::Scalar {
+    fn convert_to(t: &vesta::Scalar) -> Vec<u8> {
+        t.to_repr().as_slice().to_vec()
+    }
+
+    fn convert_from(bytes: &[u8]) -> Result<vesta::Scalar, Box<dyn Error>> {
+        // pad the array with zeros
+        let array = |input: &[u8]| -> [u8; 64] {
+            let mut output = [0u8; 64];
+            let len = input.len().min(64);
+            output[..len].copy_from_slice(&input[..len]);
+            output // Return the new array
+        };
+        Ok(vesta::Scalar::from_uniform_bytes(&array(bytes)))
     }
 }
 
@@ -172,6 +206,14 @@ mod tests {
         let original = pallas::Scalar::generate_random().unwrap();
         let bytes = pallas::Scalar::convert_to(&original);
         let recovered = pallas::Scalar::convert_from(&bytes).unwrap();
+        assert_eq!(original, recovered);
+    }
+
+    #[test]
+    fn vesta_point_conversion_round_trip() {
+        let original = vesta::Point::generate_random().unwrap();
+        let bytes = vesta::Point::convert_to(&original);
+        let recovered = vesta::Point::convert_from(&bytes).unwrap();
         assert_eq!(original, recovered);
     }
 

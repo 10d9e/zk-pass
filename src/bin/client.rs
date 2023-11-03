@@ -6,12 +6,12 @@ use structopt::StructOpt;
 use strum::VariantNames;
 use zk_pass::conversion::ByteConvertible;
 
-use pasta_curves::pallas::Point;
+use pasta_curves::pallas::Point as PallasPoint;
+use pasta_curves::vesta::Point as VestaPoint;
 use std::error::Error;
-use zk_pass::chaum_pedersen::constants::PALLAS_GROUP_PARAMS;
 use zk_pass::chaum_pedersen::{
     curve25519::Curve25519ChaumPedersen, discretelog::DiscreteLogChaumPedersen,
-    pallas::PallasCurveChaumPedersen, GroupParams,
+    pallas::PallasCurveChaumPedersen, vesta::VestaCurveChaumPedersen, GroupParams,
 };
 use zk_pass::client::execute_protocol;
 use zk_pass::client::AuthClientLib;
@@ -210,13 +210,29 @@ async fn execute_selected_protocol(
                     .await
                 }
                 EllipticCurveType::Pallas => {
-                    let ec_params = GroupParams::<Point>::from_str(&opt.curve.to_string())
+                    let ec_params = GroupParams::<PallasPoint>::from_str(&opt.curve.to_string())
                     .map_err(|_| {
                         "Invalid elliptic curve group parameters provided in command-line arguments"
                             .to_string()
                     })?;
                     // Executes the elliptic curve version of the protocol
                     execute_protocol::<PallasCurveChaumPedersen, _, _>(
+                        &ec_params,
+                        &hash_or_randomize_secret(opt.secret.as_ref()),
+                        &opt.user,
+                        client,
+                    )
+                    .await
+                }
+
+                EllipticCurveType::Vesta => {
+                    let ec_params = GroupParams::<VestaPoint>::from_str(&opt.curve.to_string())
+                    .map_err(|_| {
+                        "Invalid elliptic curve group parameters provided in command-line arguments"
+                            .to_string()
+                    })?;
+                    // Executes the elliptic curve version of the protocol
+                    execute_protocol::<VestaCurveChaumPedersen, _, _>(
                         &ec_params,
                         &hash_or_randomize_secret(opt.secret.as_ref()),
                         &opt.user,

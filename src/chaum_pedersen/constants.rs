@@ -3,8 +3,9 @@ use curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
 use curve25519_dalek::RistrettoPoint;
 use lazy_static::lazy_static;
 use num_bigint::BigUint;
-use pasta_curves::pallas::Point;
 use std::str::FromStr;
+use pasta_curves::pallas::Point as PallasPoint;
+use pasta_curves::vesta::Point as VestaPoint;
 
 // RFC5114_GROUP_PARAMETERS are constant Prime Order Subgroups as defined in RFC5114
 // Reference: https://www.rfc-editor.org/rfc/rfc5114.html#section-2
@@ -64,20 +65,38 @@ lazy_static! {
         }
     };
 
-    pub static ref PALLAS_GROUP_PARAMS: GroupParams<Point> = {
+    pub static ref PALLAS_GROUP_PARAMS: GroupParams<PallasPoint> = {
         //use pasta_curves::group::GroupEncoding;
-        GroupParams::<Point> {
-            g: Point::convert_from(
+        GroupParams::<PallasPoint> {
+            g: PallasPoint::convert_from(
                 convert(&hex::decode("f9abd1b1a37af310baa363ed031ef5613fb474f1780dc8fc767c2b1480da582b").unwrap()).unwrap()
             ).unwrap(),
-            h: Point::convert_from(
+            h: PallasPoint::convert_from(
                 convert(&hex::decode("8f1339a6e025db7854f67838a42764b870e85e991e7b2e6570c5e5fee6e5c30c").unwrap()).unwrap()
             ).unwrap(),
-            p: Point::convert_from(
-                convert(&hex::decode("00000000ed302d991bf94c09fc98462200000000000000000000000000000040").unwrap()).unwrap()
+            p: PallasPoint::convert_from(
+                convert(&hex::decode("0000000000000000000000000000000000000000000000000000000000000000").unwrap()).unwrap()
             ).unwrap(),
-            q: Point::convert_from(
-                convert(&hex::decode("00000000ed302d991bf94c09fc98462200000000000000000000000000000040").unwrap()).unwrap()
+            q: PallasPoint::convert_from(
+                convert(&hex::decode("0000000000000000000000000000000000000000000000000000000000000000").unwrap()).unwrap()
+            ).unwrap(),
+        }
+    };
+
+    pub static ref VESTA_GROUP_PARAMS: GroupParams<VestaPoint> = {
+        //use pasta_curves::group::GroupEncoding;
+        GroupParams::<VestaPoint> {
+            g: VestaPoint::convert_from(
+                convert(&hex::decode("227b13b3f09fbc6312ea3a7d150e9879fc5debc5f19e0433a0d774e7485e7ea3").unwrap()).unwrap()
+            ).unwrap(),
+            h: VestaPoint::convert_from(
+                convert(&hex::decode("33fc580619f0b5fa23a88cb6be070033cfdb0ed10aef7491d2400ea6dd45f5a6").unwrap()).unwrap()
+            ).unwrap(),
+            p: VestaPoint::convert_from(
+                convert(&hex::decode("0000000000000000000000000000000000000000000000000000000000000000").unwrap()).unwrap()
+            ).unwrap(),
+            q: VestaPoint::convert_from(
+                convert(&hex::decode("0000000000000000000000000000000000000000000000000000000000000000").unwrap()).unwrap()
             ).unwrap(),
         }
     };
@@ -126,7 +145,7 @@ impl FromStr for GroupParams<RistrettoPoint> {
 }
 
 //
-impl FromStr for GroupParams<Point> {
+impl FromStr for GroupParams<PallasPoint> {
     type Err = (); // Defining the error type as a unit type.
 
     // Implementing the from_str method which takes a string slice and returns a Result.
@@ -134,6 +153,19 @@ impl FromStr for GroupParams<Point> {
         match s {
             // Matching the string "ec25519" and returning the corresponding group parameters.
             "pallas" => Ok(PALLAS_GROUP_PARAMS.to_owned()),
+            _ => Err(()), // Returning an error for unrecognized strings.
+        }
+    }
+}
+
+impl FromStr for GroupParams<VestaPoint> {
+    type Err = (); // Defining the error type as a unit type.
+
+    // Implementing the from_str method which takes a string slice and returns a Result.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            // Matching the string "ec25519" and returning the corresponding group parameters.
+            "vesta" => Ok(VESTA_GROUP_PARAMS.to_owned()),
             _ => Err(()), // Returning an error for unrecognized strings.
         }
     }

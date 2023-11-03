@@ -1,11 +1,13 @@
 use curve25519_dalek::RistrettoPoint;
 use num_bigint::BigUint;
-use pasta_curves::pallas::Point;
+use pasta_curves::pallas::Point as PallasPoint;
+use pasta_curves::vesta::Point as VestaPoint;
 use std::str::FromStr;
 use structopt::StructOpt;
 use strum::VariantNames;
 use tonic::transport::Server;
 use zk_pass::chaum_pedersen::curve25519::Curve25519ChaumPedersen;
+use zk_pass::chaum_pedersen::vesta::VestaCurveChaumPedersen;
 use zk_pass::chaum_pedersen::discretelog::DiscreteLogChaumPedersen;
 use zk_pass::chaum_pedersen::pallas::PallasCurveChaumPedersen;
 use zk_pass::chaum_pedersen::GroupParams;
@@ -147,11 +149,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
 
             EllipticCurveType::Pallas => {
-                let params = GroupParams::<Point>::from_str(&curve.to_string()).map_err(|_| {
+                let params = GroupParams::<PallasPoint>::from_str(&curve.to_string()).map_err(|_| {
                     "Invalid elliptic curve group parameters provided in command-line arguments"
                         .to_string()
                 })?;
                 let auth = ZkAuth::<PallasCurveChaumPedersen, _, _>::new(params);
+                Server::builder()
+                    .add_service(AuthServer::new(auth))
+                    .serve(addr)
+                    .await?;
+            }
+
+            EllipticCurveType::Vesta => {
+                let params = GroupParams::<VestaPoint>::from_str(&curve.to_string()).map_err(|_| {
+                    "Invalid elliptic curve group parameters provided in command-line arguments"
+                        .to_string()
+                })?;
+                let auth = ZkAuth::<VestaCurveChaumPedersen, _, _>::new(params);
                 Server::builder()
                     .add_service(AuthServer::new(auth))
                     .serve(addr)

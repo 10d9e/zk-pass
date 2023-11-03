@@ -10,7 +10,11 @@ pub mod discretelog;
 /// A module dedicated to testing various components of the application. It includes test cases, utility functions for testing, and other resources needed to ensure the correctness and reliability of the system.
 pub mod test;
 
+/// This module provides functionality related to the Pallas elliptic curve, often used in cryptographic operations, particularly in the elliptic curve implementation of the Chaum-Pedersen protocol.
 pub mod pallas;
+
+/// This module provides functionality related to the Vesta elliptic curve, often used in cryptographic operations, particularly in the elliptic curve implementation of the Chaum-Pedersen protocol.
+pub mod vesta;
 
 /// A struct representing group parameters in cryptographic protocols.
 ///
