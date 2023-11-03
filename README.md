@@ -73,7 +73,7 @@ Note: This table shows a subset of possible combinations focusing on `type`, `cu
    
    OPTIONS:
        -c, --curve <curve>    Command line option to set the elliptic curve type. Required if the stereotype is set to
-                              "elliptic_curve" [default: ec25519]  [possible values: ec25519]
+                              "elliptic_curve" [default: ec25519]  [possible values: ec25519, pallas, vesta]
        -h, --host <host>      Command line option to set the host address for the server. Defaults to "[::1]" if not
                               specified [default: [::1]]
        -m, --modp <modp>      Command line option to set the type of the RFC log group to use. Required if the stereotype
@@ -100,7 +100,7 @@ Note: This table shows a subset of possible combinations focusing on `type`, `cu
    
    OPTIONS:
        -c, --curve <curve>      Elliptic curve type for the Elliptic Curve implementation of Chaum-Pedersen [default:
-                                ec25519]  [possible values: ec25519]
+                                ec25519]  [possible values: ec25519, pallas, vesta]
        -h, --host <host>        The host address of the ZKPass server [default: [::1]]
        -m, --modp <modp>        Type of RFC log group to use for the Discrete Log implementation of Chaum-Pedersen
                                 [default: rfc5114_modp_1024_160]  [possible values: rfc5114_modp_1024_160,
@@ -189,7 +189,7 @@ Testing configuration: type=discrete_log, curve=ec25519, modp=rfc5114_modp_1024_
       🔢 modp group: rfc5114_modp_1024_160
       🔑 user: foo
 🔑 Authentication successful! 🔑
-Session ID: dc2ab7c3-ad1f-40a2-9a53-f387812e1037
+Session ID: c78dd9a6-d8e7-4d5d-8ae3-84e4b3779a87
 Test passed for configuration: type=discrete_log, curve=ec25519, modp=rfc5114_modp_1024_160
 Testing configuration: type=discrete_log, curve=ec25519, modp=rfc5114_modp_2048_224
 🔥 Starting ZK_PASS server 🔥
@@ -204,7 +204,7 @@ Testing configuration: type=discrete_log, curve=ec25519, modp=rfc5114_modp_2048_
       🔢 modp group: rfc5114_modp_2048_224
       🔑 user: foo
 🔑 Authentication successful! 🔑
-Session ID: 774bf05c-0305-4ac1-beb0-4f3c3aee30f0
+Session ID: 6567c805-a57f-41e6-bd02-304b4c8b8b65
 Test passed for configuration: type=discrete_log, curve=ec25519, modp=rfc5114_modp_2048_224
 Testing configuration: type=discrete_log, curve=ec25519, modp=rfc5114_modp_1024_160
 🔥 Starting ZK_PASS server 🔥
@@ -219,9 +219,9 @@ Testing configuration: type=discrete_log, curve=ec25519, modp=rfc5114_modp_1024_
       🔢 modp group: rfc5114_modp_1024_160
       🔑 user: foo
 🔑 Authentication successful! 🔑
-Session ID: 43e03574-9c01-4b63-b43c-092f2cc38211
+Session ID: 41560d5c-ca8e-49e5-8f2e-1d077b300dbf
 Test passed for configuration: type=discrete_log, curve=ec25519, modp=rfc5114_modp_1024_160
-Testing configuration: type=elliptic_curve, curve=ec25519, modp=rfc5114_modp_2048_256
+Testing configuration: type=elliptic_curve, curve=ec25519, modp=rfc5114_modp_1024_160
 🔥 Starting ZK_PASS server 🔥
       🤖 host: 0.0.0.0
       🔌 port: 50051
@@ -234,7 +234,37 @@ Testing configuration: type=elliptic_curve, curve=ec25519, modp=rfc5114_modp_204
       📈 elliptic curve: ec25519
       🔑 user: foo
 🔑 Authentication successful! 🔑
-Session ID: fb1ff58f-161b-47a0-9c27-676dd19eea54
-Test passed for configuration: type=elliptic_curve, curve=ec25519, modp=rfc5114_modp_2048_256
+Session ID: a47b981e-2b85-4316-a573-d51bb4427e1d
+Test passed for configuration: type=elliptic_curve, curve=ec25519, modp=rfc5114_modp_1024_160
+Testing configuration: type=elliptic_curve, curve=pallas, modp=rfc5114_modp_1024_160
+🔥 Starting ZK_PASS server 🔥
+      🤖 host: 0.0.0.0
+      🔌 port: 50051
+      💥 stereotype: elliptic_curve
+      📈 elliptic curve: pallas
+🔥 Starting ZK_PASS client 🔥
+      🤖 host: 0.0.0.0
+      🔌 port: 50051
+      💥 stereotype: elliptic_curve
+      📈 elliptic curve: pallas
+      🔑 user: foo
+🔑 Authentication successful! 🔑
+Session ID: e03ee7b0-eae9-43de-816d-528e43aae8f2
+Test passed for configuration: type=elliptic_curve, curve=pallas, modp=rfc5114_modp_1024_160
+Testing configuration: type=elliptic_curve, curve=vesta, modp=rfc5114_modp_1024_160
+🔥 Starting ZK_PASS server 🔥
+      🤖 host: 0.0.0.0
+      🔌 port: 50051
+      💥 stereotype: elliptic_curve
+      📈 elliptic curve: vesta
+🔥 Starting ZK_PASS client 🔥
+      🤖 host: 0.0.0.0
+      🔌 port: 50051
+      💥 stereotype: elliptic_curve
+      📈 elliptic curve: vesta
+      🔑 user: foo
+🔑 Authentication successful! 🔑
+Session ID: 227c090b-85dc-44b7-987a-091be0278248
+Test passed for configuration: type=elliptic_curve, curve=vesta, modp=rfc5114_modp_1024_160
 All tests passed successfully!
 ```
