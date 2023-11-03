@@ -3,6 +3,7 @@ use curve25519_dalek::Scalar;
 use num_bigint::BigUint;
 use pasta_curves::group::ff::Field;
 use pasta_curves::Fq;
+use pasta_curves::Eq;
 use rand::rngs::OsRng;
 use rand::RngCore;
 use std::error::Error;
@@ -79,6 +80,19 @@ impl RandomGenerator<Fq> for Fq {
     /// Returns an error if the conversion from bytes to `Fq` fails.
     fn generate_random() -> Result<Fq, Box<dyn std::error::Error>> {
         Ok(Fq::random(&mut OsRng))
+    }
+}
+
+impl RandomGenerator<Eq> for Eq {
+    /// Generates a random `Fq`.
+    ///
+    /// # Returns
+    /// A `Result` containing the random `Fq`, or an error if the generation fails.
+    ///
+    /// # Errors
+    /// Returns an error if the conversion from bytes to `Fq` fails.
+    fn generate_random() -> Result<Eq, Box<dyn std::error::Error>> {
+        Ok(Eq::random(&mut OsRng))
     }
 }
 
