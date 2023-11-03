@@ -7,15 +7,15 @@
 ## Overview
 The ZKPass server is a command-line application that facilitates a secret verification [Chaum-Pedersen protocol](PROTOCOL.md) service. It offers support for both Discrete Log and Elliptic Curve implementations of the protocol.
 
-The following table shows the possible combinations of client and server configurations:
+The following table shows the possible combinations of stereotype(discrete log and elliptic curve) group configurations:
 
-| Server Type       | Server Modp             | Server Curve | Client Type       | Client Modp             | Client Curve |
-|-------------------|-------------------------|--------------|-------------------|-------------------------|--------------|
-| discrete_log      | rfc5114_modp_1024_160   | N/A          | discrete_log      | rfc5114_modp_1024_160   | N/A          |
-| discrete_log      | rfc5114_modp_2048_224   | N/A          | discrete_log      | rfc5114_modp_2048_224   | N/A          |
-| discrete_log      | rfc5114_modp_2048_256   | N/A          | discrete_log      | rfc5114_modp_2048_256   | N/A          |
-| elliptic_curve    | N/A                     | ec25519      | elliptic_curve    | N/A                     | ec25519      |
-| elliptic_curve    | N/A                     | pallas       | elliptic_curve    | N/A                     | pallas       |
+| Type              | Modp                    | Curve        |
+|-------------------|-------------------------|--------------|
+| discrete_log      | rfc5114_modp_1024_160   | N/A          |
+| discrete_log      | rfc5114_modp_2048_224   | N/A          |
+| discrete_log      | rfc5114_modp_2048_256   | N/A          |
+| elliptic_curve    | N/A                     | ec25519      |
+| elliptic_curve    | N/A                     | pallas       |
 
 Note: This table shows a subset of possible combinations focusing on `type`, `curve`, and `modp` options as they must match between the server and client.
 
