@@ -6,9 +6,12 @@ use structopt::StructOpt;
 use strum::VariantNames;
 use zk_pass::conversion::ByteConvertible;
 
+use pasta_curves::pallas::Point;
 use std::error::Error;
+use zk_pass::chaum_pedersen::constants::PALLAS_GROUP_PARAMS;
 use zk_pass::chaum_pedersen::{
-    curve25519::EllipticCurveChaumPedersen, discretelog::DiscreteLogChaumPedersen, GroupParams,
+    curve25519::Curve25519ChaumPedersen, discretelog::DiscreteLogChaumPedersen,
+    pallas::PallasCurveChaumPedersen, GroupParams,
 };
 use zk_pass::client::execute_protocol;
 use zk_pass::client::AuthClientLib;
@@ -92,7 +95,7 @@ fn hash_or_randomize_secret<T: ByteConvertible<T> + RandomGenerator<T>>(
             let mut hasher = Sha512::new();
             hasher.update(s);
             let result = hasher.finalize();
-            T::from_bytes(&result).expect("Failed to convert hash to target type")
+            T::convert_from(&result).expect("Failed to convert hash to target type")
         }
         None => T::generate_random().expect("Failed to generate random value"),
     }
@@ -165,43 +168,63 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Establishes a connection to the ZKPass server.
     let mut client = AuthClientLib::connect(format!("http://{}:{}", opt.host, opt.port)).await?;
+    execute_selected_protocol(opt, &mut client).await?;
+    Ok(())
+}
 
+async fn execute_selected_protocol(
+    opt: Opt, client: &mut AuthClientLib,
+) -> Result<(), Box<dyn Error>> {
     // Executes the selected Chaum-Pedersen protocol.
     match opt.r#type {
         ChaumPedersenType::DiscreteLog => {
-            // Executes the discrete log version of the protocol
-            // Parses group parameters for Discrete Log and Elliptic Curve implementations.
             let dl_params =
                 GroupParams::<BigUint>::from_str(&opt.modp.to_string()).map_err(|_| {
                     "Invalid discrete log group parameters provided in command-line arguments"
                         .to_string()
                 })?;
-
+            // Executes the discrete log version of the protocol
             execute_protocol::<DiscreteLogChaumPedersen, _, _>(
                 &dl_params,
                 &hash_or_randomize_secret(opt.secret.as_ref()),
                 &opt.user,
-                &mut client,
+                client,
             )
-            .await?;
+            .await
         }
         ChaumPedersenType::EllipticCurve => {
-            // Executes the elliptic curve version of the protocol
-            let ec_params = GroupParams::<RistrettoPoint>::from_str(&opt.curve.to_string())
-                .map_err(|_| {
-                    "Invalid elliptic curve group parameters provided in command-line arguments"
-                        .to_string()
-                })?;
-
-            execute_protocol::<EllipticCurveChaumPedersen, _, _>(
-                &ec_params,
-                &hash_or_randomize_secret(opt.secret.as_ref()),
-                &opt.user,
-                &mut client,
-            )
-            .await?;
+            match opt.curve {
+                EllipticCurveType::Ec25519 => {
+                    let ec_params = GroupParams::<RistrettoPoint>::from_str(&opt.curve.to_string())
+                    .map_err(|_| {
+                        "Invalid elliptic curve group parameters provided in command-line arguments"
+                            .to_string()
+                    })?;
+                    // Executes the elliptic curve version of the protocol
+                    execute_protocol::<Curve25519ChaumPedersen, _, _>(
+                        &ec_params,
+                        &hash_or_randomize_secret(opt.secret.as_ref()),
+                        &opt.user,
+                        client,
+                    )
+                    .await
+                }
+                EllipticCurveType::Pallas => {
+                    let ec_params = GroupParams::<Point>::from_str(&opt.curve.to_string())
+                    .map_err(|_| {
+                        "Invalid elliptic curve group parameters provided in command-line arguments"
+                            .to_string()
+                    })?;
+                    // Executes the elliptic curve version of the protocol
+                    execute_protocol::<PallasCurveChaumPedersen, _, _>(
+                        &ec_params,
+                        &hash_or_randomize_secret(opt.secret.as_ref()),
+                        &opt.user,
+                        client,
+                    )
+                    .await
+                }
+            }
         }
     }
-
-    Ok(())
 }

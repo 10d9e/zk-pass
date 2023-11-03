@@ -137,23 +137,23 @@ where
 
     // Registers the commitment with the server.
     client
-        .register(user.clone(), P::to_bytes(&y1), P::to_bytes(&y2))
+        .register(user.clone(), P::convert_to(&y1), P::convert_to(&y2))
         .await?;
 
     // Creates an authentication challenge.
     let (c, auth_id) = client
-        .create_authentication_challenge(user.clone(), P::to_bytes(&r1), P::to_bytes(&r2))
+        .create_authentication_challenge(user.clone(), P::convert_to(&r1), P::convert_to(&r2))
         .await?;
 
     // Converts the challenge from bytes to the appropriate type.
-    let challenge = S::from_bytes(&c)?;
+    let challenge = S::convert_from(&c)?;
 
     // Calculates the response to the challenge.
     let s = T::challenge_response(&params, &k, &challenge, &x);
 
     // Sends the response to the server and receives a session ID.
     let session_id = client
-        .verify_authentication(auth_id, S::to_bytes(&s))
+        .verify_authentication(auth_id, S::convert_to(&s))
         .await?;
 
     // Displays the session ID.

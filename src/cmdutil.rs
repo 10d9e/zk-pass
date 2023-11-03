@@ -45,4 +45,5 @@ pub enum ChaumPedersenType {
 #[strum(serialize_all = "snake_case")]
 pub enum EllipticCurveType {
     Ec25519,
+    Pallas,
 }

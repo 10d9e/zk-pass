@@ -11,16 +11,16 @@ fn bench_biguint_serialization(c: &mut Criterion) {
     let biguint = 123456789u64.to_biguint().unwrap();
     c.bench_function("BigUint Serialization", |b| {
         b.iter(|| {
-            black_box(BigUint::to_bytes(&biguint));
+            black_box(BigUint::convert_to(&biguint));
         });
     });
 }
 
 fn bench_biguint_deserialization(c: &mut Criterion) {
-    let bytes = BigUint::to_bytes(&123456789u64.to_biguint().unwrap());
+    let bytes = BigUint::convert_to(&123456789u64.to_biguint().unwrap());
     c.bench_function("BigUint Deserialization", |b| {
         b.iter(|| {
-            black_box(BigUint::from_bytes(&bytes).unwrap());
+            black_box(BigUint::convert_from(&bytes).unwrap());
         });
     });
 }
@@ -29,17 +29,17 @@ fn bench_ristretto_point_serialization(c: &mut Criterion) {
     let point = RISTRETTO_BASEPOINT_POINT * Scalar::random(&mut OsRng);
     c.bench_function("RistrettoPoint Serialization", |b| {
         b.iter(|| {
-            black_box(RistrettoPoint::to_bytes(&point));
+            black_box(RistrettoPoint::convert_to(&point));
         });
     });
 }
 
 fn bench_ristretto_point_deserialization(c: &mut Criterion) {
     let point = RISTRETTO_BASEPOINT_POINT * Scalar::random(&mut OsRng);
-    let bytes = RistrettoPoint::to_bytes(&point);
+    let bytes = RistrettoPoint::convert_to(&point);
     c.bench_function("RistrettoPoint Deserialization", |b| {
         b.iter(|| {
-            black_box(RistrettoPoint::from_bytes(&bytes).unwrap());
+            black_box(RistrettoPoint::convert_from(&bytes).unwrap());
         });
     });
 }
@@ -58,7 +58,7 @@ fn bench_scalar_deserialization(c: &mut Criterion) {
     let bytes = Scalar::to_bytes(&scalar);
     c.bench_function("Scalar Deserialization", |b| {
         b.iter(|| {
-            black_box(Scalar::from_bytes(&bytes).unwrap());
+            black_box(Scalar::convert_from(&bytes).unwrap());
         });
     });
 }

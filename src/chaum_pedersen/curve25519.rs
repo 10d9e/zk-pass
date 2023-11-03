@@ -6,10 +6,10 @@ use rand::rngs::OsRng;
 /// A struct representing the Chaum-Pedersen protocol specialized for elliptic curve groups.
 /// This protocol is used for demonstrating knowledge of a secret in a zero-knowledge manner.
 /// The elliptic curve used in this implementation is based on Ristretto points.
-pub struct EllipticCurveChaumPedersen {}
+pub struct Curve25519ChaumPedersen {}
 
 /// Implementing the ChaumPedersen trait for EllipticCurveChaumPedersen.
-impl ChaumPedersen for EllipticCurveChaumPedersen {
+impl ChaumPedersen for Curve25519ChaumPedersen {
     /// Defines the type of the secret being proven. In this case, it is a scalar value.
     type Secret = Scalar;
 
@@ -166,7 +166,7 @@ mod test {
         };
 
         // Calculating the commitment.
-        let (cp, _) = EllipticCurveChaumPedersen::commitment(&params, &x);
+        let (cp, _) = Curve25519ChaumPedersen::commitment(&params, &x);
         let (y1, y2, _, _) = cp;
 
         // Verifying the correctness of the commitment.
@@ -194,7 +194,7 @@ mod test {
         };
 
         // Executing the protocol and asserting the verification is successful.
-        assert!(test_execute_protocol::<EllipticCurveChaumPedersen>(&params, &x));
+        assert!(test_execute_protocol::<Curve25519ChaumPedersen>(&params, &x));
     }
 
     #[test]
@@ -206,7 +206,7 @@ mod test {
         let params = EC25519_GROUP_PARAMS.to_owned();
 
         // Executing the protocol and asserting the verification is successful.
-        assert!(test_execute_protocol::<EllipticCurveChaumPedersen>(&params, &x));
+        assert!(test_execute_protocol::<Curve25519ChaumPedersen>(&params, &x));
     }
 
     #[test]
@@ -216,10 +216,10 @@ mod test {
         let params = EC25519_GROUP_PARAMS.to_owned();
         let x = Scalar::random(&mut rng);
 
-        let (cp, _) = EllipticCurveChaumPedersen::commitment(&params, &x);
-        let c = EllipticCurveChaumPedersen::challenge(&params);
+        let (cp, _) = Curve25519ChaumPedersen::commitment(&params, &x);
+        let c = Curve25519ChaumPedersen::challenge(&params);
         let fake_response = Scalar::generate_random().unwrap();
-        let verified = EllipticCurveChaumPedersen::verify(&params, &fake_response, &c, &cp);
+        let verified = Curve25519ChaumPedersen::verify(&params, &fake_response, &c, &cp);
         assert!(!verified);
     }
 
@@ -231,10 +231,10 @@ mod test {
         // Creating a secret value x.
         let x = Scalar::random(&mut rng);
 
-        let (cp, _) = EllipticCurveChaumPedersen::commitment(&params, &x);
-        let c = EllipticCurveChaumPedersen::challenge(&params);
+        let (cp, _) = Curve25519ChaumPedersen::commitment(&params, &x);
+        let c = Curve25519ChaumPedersen::challenge(&params);
         let fake_response = Scalar::generate_random().unwrap();
-        let verified = EllipticCurveChaumPedersen::verify(&params, &fake_response, &c, &cp);
+        let verified = Curve25519ChaumPedersen::verify(&params, &fake_response, &c, &cp);
         assert!(!verified);
     }
 

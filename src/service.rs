@@ -1,4 +1,4 @@
-use crate::chaum_pedersen::curve25519::EllipticCurveChaumPedersen;
+use crate::chaum_pedersen::curve25519::Curve25519ChaumPedersen;
 use crate::conversion::ByteConvertible;
 use crate::repository::daoimpl::InMemoryUserDao;
 use curve25519_dalek::RistrettoPoint;
@@ -41,7 +41,27 @@ pub struct ZkAuth<C, T, S> {
     _scalar_phantom: std::marker::PhantomData<S>,
 }
 
+impl<
+        C,
+        T: std::marker::Send + std::marker::Sync + std::clone::Clone + ByteConvertible<T> + 'static,
+        S: std::marker::Send + std::marker::Sync + std::clone::Clone + ByteConvertible<S> + 'static,
+    > ZkAuth<C, T, S>
+{
+    pub fn new(params: GroupParams<T>) -> Self {
+        let dao = Mutex::new(
+            Box::new(InMemoryUserDao::<T, S>::new()) as Box<dyn UserDao<T, S> + Send + Sync>
+        );
+        Self {
+            params,
+            dao,
+            _type_phantom: std::marker::PhantomData,
+            _scalar_phantom: std::marker::PhantomData,
+        }
+    }
+}
+
 // Implementations for different Chaum-Pedersen protocols
+/*
 impl ZkAuth<DiscreteLogChaumPedersen, BigUint, BigUint> {
     /// Creates a new instance of `ZkAuth` using the Discrete Log Chaum-Pedersen protocol.
     pub fn new_discrete_log_chaum_pedersen(params: GroupParams<BigUint>) -> Self {
@@ -56,7 +76,7 @@ impl ZkAuth<DiscreteLogChaumPedersen, BigUint, BigUint> {
     }
 }
 
-impl ZkAuth<EllipticCurveChaumPedersen, RistrettoPoint, Scalar> {
+impl ZkAuth<Curve25519ChaumPedersen, RistrettoPoint, Scalar> {
     /// Creates a new instance of `ZkAuth` using the Elliptic Curve Chaum-Pedersen protocol.
     pub fn new_elliptic_curve_chaum_pedersen(params: GroupParams<RistrettoPoint>) -> Self {
         let dao = Mutex::new(Box::new(InMemoryUserDao::<RistrettoPoint, Scalar>::new())
@@ -69,6 +89,7 @@ impl ZkAuth<EllipticCurveChaumPedersen, RistrettoPoint, Scalar> {
         }
     }
 }
+*/
 
 /// Implementation of the `Auth` trait for `ZkAuth`.
 ///
@@ -110,8 +131,10 @@ where
         trace!("register: {:?}", request);
         let req = request.into_inner();
 
-        let y1 = T::from_bytes(&req.y1).or_else(|_| Err(Status::invalid_argument("Invalid y1")))?;
-        let y2 = T::from_bytes(&req.y2).or_else(|_| Err(Status::invalid_argument("Invalid y2")))?;
+        let y1 =
+            T::convert_from(&req.y1).or_else(|_| Err(Status::invalid_argument("Invalid y1")))?;
+        let y2 =
+            T::convert_from(&req.y2).or_else(|_| Err(Status::invalid_argument("Invalid y2")))?;
 
         let user = User {
             username: req.user.clone(),
@@ -153,10 +176,12 @@ where
                 .read(&req.user)
                 .ok_or_else(|| Status::not_found("User not found"))?;
             user.r1 = Some(
-                T::from_bytes(&req.r1).or_else(|_| Err(Status::invalid_argument("Invalid r1")))?,
+                T::convert_from(&req.r1)
+                    .or_else(|_| Err(Status::invalid_argument("Invalid r1")))?,
             );
             user.r2 = Some(
-                T::from_bytes(&req.r2).or_else(|_| Err(Status::invalid_argument("Invalid r2")))?,
+                T::convert_from(&req.r2)
+                    .or_else(|_| Err(Status::invalid_argument("Invalid r2")))?,
             );
             user.clone()
         };
@@ -169,7 +194,7 @@ where
 
         let reply = AuthenticationChallengeResponse {
             auth_id,
-            c: S::to_bytes(&challenge),
+            c: S::convert_to(&challenge),
         };
         trace!("create_authentication_challenge reply: {:?}", reply);
         Ok(Response::new(reply))
@@ -201,7 +226,7 @@ where
                 .ok_or_else(|| Status::not_found("User not found"))?
         };
 
-        let s = S::from_bytes(&req.s).or_else(|_| Err(Status::invalid_argument("Invalid s")))?;
+        let s = S::convert_from(&req.s).or_else(|_| Err(Status::invalid_argument("Invalid s")))?;
         let params = self.params.clone();
         let verified = C::verify(
             &params,
