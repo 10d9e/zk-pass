@@ -142,6 +142,23 @@ impl ByteConvertible<vesta::Point> for vesta::Point {
     }
 }
 
+impl ByteConvertible<vesta::Scalar> for vesta::Scalar {
+    fn convert_to(t: &vesta::Scalar) -> Vec<u8> {
+        t.to_repr().as_slice().to_vec()
+    }
+
+    fn convert_from(bytes: &[u8]) -> Result<vesta::Scalar, Box<dyn Error>> {
+        // pad the array with zeros
+        let array = |input: &[u8]| -> [u8; 64] {
+            let mut output = [0u8; 64];
+            let len = input.len().min(64);
+            output[..len].copy_from_slice(&input[..len]);
+            output // Return the new array
+        };
+        Ok(vesta::Scalar::from_uniform_bytes(&array(bytes)))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

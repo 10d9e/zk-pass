@@ -39,6 +39,6 @@ run_test "discrete_log" "ec25519" "rfc5114_modp_2048_224"
 run_test "discrete_log" "ec25519" "rfc5114_modp_1024_160"
 run_test "elliptic_curve" "ec25519" "rfc5114_modp_1024_160"
 run_test "elliptic_curve" "pallas" "rfc5114_modp_1024_160"
-# Add more test scenarios as needed
+run_test "elliptic_curve" "vesta" "rfc5114_modp_1024_160"
 
 echo "All tests passed successfully!"

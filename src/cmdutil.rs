@@ -46,4 +46,5 @@ pub enum ChaumPedersenType {
 pub enum EllipticCurveType {
     Ec25519,
     Pallas,
+    Vesta,
 }

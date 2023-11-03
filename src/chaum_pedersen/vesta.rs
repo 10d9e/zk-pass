@@ -110,9 +110,10 @@ mod test {
     //! challenge, and verification steps of the protocol using the Vesta elliptic curve.
 
     use super::*;
-    use crate::chaum_pedersen::constants::{PALLAS_GROUP_PARAMS, VESTA_GROUP_PARAMS};
+    use crate::chaum_pedersen::constants::{VESTA_GROUP_PARAMS};
     use crate::chaum_pedersen::test::test_execute_protocol;
-    use pasta_curves::group::GroupEncoding;
+    use curve25519_dalek::digest::typenum::Quot;
+    use pasta_curves::group::{GroupEncoding, Group};
 
     /// Test verification using standard protocol execution.
     #[test]
@@ -120,6 +121,29 @@ mod test {
         let mut rng = OsRng;
         let x = Scalar::random(&mut rng);
         let params = VESTA_GROUP_PARAMS.to_owned();
+
+     
+        // Generating random points g and h on the Vesta curve.
+        /*
+        let g = Point::generator() * Scalar::random(&mut rng);
+        let h = Point::generator() * Scalar::random(&mut rng);
+        let p = Point::generator();
+        let q = Point::generator();
+
+        // Setting up the group parameters.
+        let params = GroupParams::<Point> {
+            g: g.clone(),
+            h: h.clone(),
+            p: Point::generator(),
+            q: Point::generator(),
+        };
+         
+
+        println!("g: {:?}", hex::encode(g.to_bytes()));
+        println!("h: {:?}", hex::encode(h.to_bytes()));
+        println!("p: {:?}", hex::encode(p.to_bytes()));
+        println!("q: {:?}", hex::encode(q.to_bytes()));
+        */
 
         // Testing the correctness of the serialization and deserialization of group parameters.
         let gb = params.g.to_bytes();

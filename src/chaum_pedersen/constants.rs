@@ -75,10 +75,10 @@ lazy_static! {
                 convert(&hex::decode("8f1339a6e025db7854f67838a42764b870e85e991e7b2e6570c5e5fee6e5c30c").unwrap()).unwrap()
             ).unwrap(),
             p: PallasPoint::convert_from(
-                convert(&hex::decode("00000000ed302d991bf94c09fc98462200000000000000000000000000000040").unwrap()).unwrap()
+                convert(&hex::decode("0000000000000000000000000000000000000000000000000000000000000000").unwrap()).unwrap()
             ).unwrap(),
             q: PallasPoint::convert_from(
-                convert(&hex::decode("00000000ed302d991bf94c09fc98462200000000000000000000000000000040").unwrap()).unwrap()
+                convert(&hex::decode("0000000000000000000000000000000000000000000000000000000000000000").unwrap()).unwrap()
             ).unwrap(),
         }
     };
@@ -87,16 +87,16 @@ lazy_static! {
         //use pasta_curves::group::GroupEncoding;
         GroupParams::<VestaPoint> {
             g: VestaPoint::convert_from(
-                convert(&hex::decode("f9abd1b1a37af310baa363ed031ef5613fb474f1780dc8fc767c2b1480da582b").unwrap()).unwrap()
+                convert(&hex::decode("227b13b3f09fbc6312ea3a7d150e9879fc5debc5f19e0433a0d774e7485e7ea3").unwrap()).unwrap()
             ).unwrap(),
             h: VestaPoint::convert_from(
-                convert(&hex::decode("8f1339a6e025db7854f67838a42764b870e85e991e7b2e6570c5e5fee6e5c30c").unwrap()).unwrap()
+                convert(&hex::decode("33fc580619f0b5fa23a88cb6be070033cfdb0ed10aef7491d2400ea6dd45f5a6").unwrap()).unwrap()
             ).unwrap(),
             p: VestaPoint::convert_from(
-                convert(&hex::decode("00000000ed302d991bf94c09fc98462200000000000000000000000000000040").unwrap()).unwrap()
+                convert(&hex::decode("0000000000000000000000000000000000000000000000000000000000000000").unwrap()).unwrap()
             ).unwrap(),
             q: VestaPoint::convert_from(
-                convert(&hex::decode("00000000ed302d991bf94c09fc98462200000000000000000000000000000040").unwrap()).unwrap()
+                convert(&hex::decode("0000000000000000000000000000000000000000000000000000000000000000").unwrap()).unwrap()
             ).unwrap(),
         }
     };

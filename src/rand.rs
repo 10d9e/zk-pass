@@ -7,6 +7,9 @@ use pasta_curves::Eq;
 use rand::rngs::OsRng;
 use rand::RngCore;
 use std::error::Error;
+use pasta_curves::group::Group;
+use pasta_curves::Ep;
+use pasta_curves::Fp;
 
 /// Defines a trait for generating random values of a given type.
 ///
@@ -96,17 +99,28 @@ impl RandomGenerator<Eq> for Eq {
     }
 }
 
-use pasta_curves::group::Group;
-use pasta_curves::Ep;
 impl RandomGenerator<Ep> for Ep {
-    /// Generates a random `Fq`.
+    /// Generates a random `Ep`.
     ///
     /// # Returns
-    /// A `Result` containing the random `Fq`, or an error if the generation fails.
+    /// A `Result` containing the random `Ep`, or an error if the generation fails.
     ///
     /// # Errors
-    /// Returns an error if the conversion from bytes to `Fq` fails.
+    /// Returns an error if the conversion from bytes to `Ep` fails.
     fn generate_random() -> Result<Ep, Box<dyn std::error::Error>> {
         Ok(Ep::random(&mut OsRng))
+    }
+}
+
+impl RandomGenerator<Fp> for Fp {
+    /// Generates a random `Fp`.
+    ///
+    /// # Returns
+    /// A `Result` containing the random `Fp`, or an error if the generation fails.
+    ///
+    /// # Errors
+    /// Returns an error if the conversion from bytes to `Fp` fails.
+    fn generate_random() -> Result<Fp, Box<dyn std::error::Error>> {
+        Ok(Fp::random(&mut OsRng))
     }
 }
