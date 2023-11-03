@@ -2,7 +2,7 @@ use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use curve25519_dalek::RistrettoPoint;
 use curve25519_dalek::{constants::RISTRETTO_BASEPOINT_POINT, scalar::Scalar};
 use rand::rngs::OsRng;
-use zk_pass::chaum_pedersen::curve25519::EllipticCurveChaumPedersen;
+use zk_pass::chaum_pedersen::curve25519::Curve25519ChaumPedersen;
 use zk_pass::chaum_pedersen::ChaumPedersen;
 use zk_pass::chaum_pedersen::GroupParams;
 
@@ -18,7 +18,7 @@ pub fn elliptic_curve_commitment_benchmark(c: &mut Criterion) {
             p: RISTRETTO_BASEPOINT_POINT,
             q: RISTRETTO_BASEPOINT_POINT,
         };
-        b.iter(|| EllipticCurveChaumPedersen::commitment(black_box(&params), black_box(&x)));
+        b.iter(|| Curve25519ChaumPedersen::commitment(black_box(&params), black_box(&x)));
     });
 }
 
@@ -30,7 +30,7 @@ pub fn elliptic_curve_challenge_benchmark(c: &mut Criterion) {
             p: RISTRETTO_BASEPOINT_POINT,
             q: RISTRETTO_BASEPOINT_POINT,
         };
-        b.iter(|| EllipticCurveChaumPedersen::challenge(black_box(&params)));
+        b.iter(|| Curve25519ChaumPedersen::challenge(black_box(&params)));
     });
 }
 

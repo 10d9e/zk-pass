@@ -1,6 +1,8 @@
 use curve25519_dalek::RistrettoPoint;
 use curve25519_dalek::Scalar;
 use num_bigint::BigUint;
+use pasta_curves::group::ff::Field;
+use pasta_curves::Fq;
 use rand::rngs::OsRng;
 use rand::RngCore;
 use std::error::Error;
@@ -63,5 +65,34 @@ impl RandomGenerator<RistrettoPoint> for RistrettoPoint {
     /// Returns an error if the conversion from bytes to `RistrettoPoint` fails.
     fn generate_random() -> Result<RistrettoPoint, Box<dyn std::error::Error>> {
         Ok(RistrettoPoint::random(&mut OsRng))
+    }
+}
+
+// Implementation of `RandomGenerator` trait for `Fq`.
+impl RandomGenerator<Fq> for Fq {
+    /// Generates a random `Fq`.
+    ///
+    /// # Returns
+    /// A `Result` containing the random `Fq`, or an error if the generation fails.
+    ///
+    /// # Errors
+    /// Returns an error if the conversion from bytes to `Fq` fails.
+    fn generate_random() -> Result<Fq, Box<dyn std::error::Error>> {
+        Ok(Fq::random(&mut OsRng))
+    }
+}
+
+use pasta_curves::group::Group;
+use pasta_curves::Ep;
+impl RandomGenerator<Ep> for Ep {
+    /// Generates a random `Fq`.
+    ///
+    /// # Returns
+    /// A `Result` containing the random `Fq`, or an error if the generation fails.
+    ///
+    /// # Errors
+    /// Returns an error if the conversion from bytes to `Fq` fails.
+    fn generate_random() -> Result<Ep, Box<dyn std::error::Error>> {
+        Ok(Ep::random(&mut OsRng))
     }
 }

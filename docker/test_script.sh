@@ -37,7 +37,8 @@ run_test() {
 run_test "discrete_log" "ec25519" "rfc5114_modp_1024_160"
 run_test "discrete_log" "ec25519" "rfc5114_modp_2048_224"
 run_test "discrete_log" "ec25519" "rfc5114_modp_1024_160"
-run_test "elliptic_curve" "ec25519" "rfc5114_modp_2048_256"
+run_test "elliptic_curve" "ec25519" "rfc5114_modp_1024_160"
+run_test "elliptic_curve" "pallas" "rfc5114_modp_1024_160"
 # Add more test scenarios as needed
 
 echo "All tests passed successfully!"
