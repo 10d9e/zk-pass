@@ -9,14 +9,14 @@ The ZKPass server is a command-line application that facilitates a secret verifi
 
 The following table shows the possible combinations of stereotype(discrete log and elliptic curve) group configurations:
 
-| Type              | Modp                    | Curve        |
-|-------------------|-------------------------|--------------|
-| discrete_log      | rfc5114_modp_1024_160   | N/A          |
-| discrete_log      | rfc5114_modp_2048_224   | N/A          |
-| discrete_log      | rfc5114_modp_2048_256   | N/A          |
-| elliptic_curve    | N/A                     | ec25519      |
-| elliptic_curve    | N/A                     | pallas       |
-| elliptic_curve    | N/A                     | vesta        |
+| Type              | Modp / Curve            |
+|-------------------|-------------------------|
+| discrete_log      | rfc5114_modp_1024_160   |
+| discrete_log      | rfc5114_modp_2048_224   |
+| discrete_log      | rfc5114_modp_2048_256   |
+| elliptic_curve    | ec25519                 |
+| elliptic_curve    | pallas                  |
+| elliptic_curve    | vesta                   |
 
 Note: This table shows a subset of possible combinations focusing on `type`, `curve`, and `modp` options as they must match between the server and client.
 
