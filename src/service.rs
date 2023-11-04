@@ -60,37 +60,6 @@ impl<
     }
 }
 
-// Implementations for different Chaum-Pedersen protocols
-/*
-impl ZkAuth<DiscreteLogChaumPedersen, BigUint, BigUint> {
-    /// Creates a new instance of `ZkAuth` using the Discrete Log Chaum-Pedersen protocol.
-    pub fn new_discrete_log_chaum_pedersen(params: GroupParams<BigUint>) -> Self {
-        let dao = Mutex::new(Box::new(InMemoryUserDao::<BigUint, BigUint>::new())
-            as Box<dyn UserDao<BigUint, BigUint> + Send + Sync>);
-        Self {
-            params,
-            dao,
-            _type_phantom: std::marker::PhantomData,
-            _scalar_phantom: std::marker::PhantomData,
-        }
-    }
-}
-
-impl ZkAuth<Curve25519ChaumPedersen, RistrettoPoint, Scalar> {
-    /// Creates a new instance of `ZkAuth` using the Elliptic Curve Chaum-Pedersen protocol.
-    pub fn new_elliptic_curve_chaum_pedersen(params: GroupParams<RistrettoPoint>) -> Self {
-        let dao = Mutex::new(Box::new(InMemoryUserDao::<RistrettoPoint, Scalar>::new())
-            as Box<dyn UserDao<RistrettoPoint, Scalar> + Send + Sync>);
-        Self {
-            params,
-            dao,
-            _type_phantom: std::marker::PhantomData,
-            _scalar_phantom: std::marker::PhantomData,
-        }
-    }
-}
-*/
-
 /// Implementation of the `Auth` trait for `ZkAuth`.
 ///
 /// This implementation provides the necessary methods for user registration,
