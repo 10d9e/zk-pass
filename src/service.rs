@@ -1,7 +1,7 @@
 use crate::conversion::ByteConvertible;
 use crate::repository::daoimpl::InMemoryUserDao;
 use log::{debug, error, info, trace};
-use std::sync::Mutex;
+use tokio::sync::Mutex;
 use tonic::{Request, Response, Status};
 use uuid::Uuid;
 
@@ -108,11 +108,9 @@ where
             r1: None,
             r2: None,
         };
-
-        {
-            let mut dao = self.dao.lock().unwrap();
-            dao.create(user);
-        }
+        
+        let mut dao = self.dao.lock().await;
+        dao.create(user);
 
         let reply = RegisterResponse {};
         trace!("register reply: {:?}", reply);
@@ -135,8 +133,7 @@ where
         let challenge = C::challenge(&self.params);
 
         let user = {
-            //let mut dao = USER_DAO.lock().unwrap();
-            let mut dao = self.dao.lock().unwrap();
+            let mut dao = self.dao.lock().await;
             let mut user = dao
                 .read(&req.user)
                 .ok_or_else(|| Status::not_found("User not found"))?;
@@ -152,7 +149,7 @@ where
         };
 
         let auth_id = {
-            let mut dao = self.dao.lock().unwrap();
+            let mut dao = self.dao.lock().await;
             dao.update(&user.username, user.clone());
             dao.create_auth_challenge(&req.user, &challenge)
         };
@@ -180,13 +177,13 @@ where
         let req = request.into_inner();
 
         let challenge = {
-            let mut dao = self.dao.lock().unwrap();
+            let mut dao = self.dao.lock().await;
             dao.get_authentication_challenge(&req.auth_id)
                 .ok_or_else(|| Status::not_found("Challenge not found"))?
         };
 
         let user = {
-            let mut dao = self.dao.lock().unwrap();
+            let mut dao = self.dao.lock().await;
             dao.read(&challenge.user)
                 .ok_or_else(|| Status::not_found("User not found"))?
         };
@@ -209,10 +206,8 @@ where
         update_session(user.username.clone(), session_id.clone()); // Clone session_id before moving it
         let reply = AuthenticationAnswerResponse { session_id };
 
-        {
-            let mut dao = self.dao.lock().unwrap();
-            dao.delete_auth_challenge(&req.auth_id);
-        }
+        let mut dao = self.dao.lock().await;
+        dao.delete_auth_challenge(&req.auth_id);
 
         info!("🔑 User: {} authenticated, session id: {}", user.username, req.auth_id);
         trace!("verify_authentication reply: {:?}", reply);
