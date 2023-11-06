@@ -110,10 +110,9 @@ mod test {
     //! challenge, and verification steps of the protocol using the Vesta elliptic curve.
 
     use super::*;
-    use crate::chaum_pedersen::constants::{VESTA_GROUP_PARAMS};
+    use crate::chaum_pedersen::constants::VESTA_GROUP_PARAMS;
     use crate::chaum_pedersen::test::test_execute_protocol;
-    use curve25519_dalek::digest::typenum::Quot;
-    use pasta_curves::group::{GroupEncoding, Group};
+    use pasta_curves::group::GroupEncoding;
 
     /// Test verification using standard protocol execution.
     #[test]
