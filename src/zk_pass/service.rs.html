@@ -214,15 +214,10 @@
 <a href="#214" id="214">214</a>
 <a href="#215" id="215">215</a>
 <a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::conversion::ByteConvertible;
 <span class="kw">use </span><span class="kw">crate</span>::repository::daoimpl::InMemoryUserDao;
 <span class="kw">use </span>log::{debug, error, info, trace};
-<span class="kw">use </span>std::sync::Mutex;
+<span class="kw">use </span>tokio::sync::Mutex;
 <span class="kw">use </span>tonic::{Request, Response, Status};
 <span class="kw">use </span>uuid::Uuid;
 
@@ -329,11 +324,9 @@
             r1: <span class="prelude-val">None</span>,
             r2: <span class="prelude-val">None</span>,
         };
-
-        {
-            <span class="kw">let </span><span class="kw-2">mut </span>dao = <span class="self">self</span>.dao.lock().unwrap();
-            dao.create(user);
-        }
+        
+        <span class="kw">let </span><span class="kw-2">mut </span>dao = <span class="self">self</span>.dao.lock().<span class="kw">await</span>;
+        dao.create(user);
 
         <span class="kw">let </span>reply = RegisterResponse {};
         <span class="macro">trace!</span>(<span class="string">&quot;register reply: {:?}&quot;</span>, reply);
@@ -356,8 +349,7 @@
         <span class="kw">let </span>challenge = C::challenge(<span class="kw-2">&amp;</span><span class="self">self</span>.params);
 
         <span class="kw">let </span>user = {
-            <span class="comment">//let mut dao = USER_DAO.lock().unwrap();
-            </span><span class="kw">let </span><span class="kw-2">mut </span>dao = <span class="self">self</span>.dao.lock().unwrap();
+            <span class="kw">let </span><span class="kw-2">mut </span>dao = <span class="self">self</span>.dao.lock().<span class="kw">await</span>;
             <span class="kw">let </span><span class="kw-2">mut </span>user = dao
                 .read(<span class="kw-2">&amp;</span>req.user)
                 .ok_or_else(|| Status::not_found(<span class="string">&quot;User not found&quot;</span>))<span class="question-mark">?</span>;
@@ -373,7 +365,7 @@
         };
 
         <span class="kw">let </span>auth_id = {
-            <span class="kw">let </span><span class="kw-2">mut </span>dao = <span class="self">self</span>.dao.lock().unwrap();
+            <span class="kw">let </span><span class="kw-2">mut </span>dao = <span class="self">self</span>.dao.lock().<span class="kw">await</span>;
             dao.update(<span class="kw-2">&amp;</span>user.username, user.clone());
             dao.create_auth_challenge(<span class="kw-2">&amp;</span>req.user, <span class="kw-2">&amp;</span>challenge)
         };
@@ -401,13 +393,13 @@
         <span class="kw">let </span>req = request.into_inner();
 
         <span class="kw">let </span>challenge = {
-            <span class="kw">let </span><span class="kw-2">mut </span>dao = <span class="self">self</span>.dao.lock().unwrap();
+            <span class="kw">let </span><span class="kw-2">mut </span>dao = <span class="self">self</span>.dao.lock().<span class="kw">await</span>;
             dao.get_authentication_challenge(<span class="kw-2">&amp;</span>req.auth_id)
                 .ok_or_else(|| Status::not_found(<span class="string">&quot;Challenge not found&quot;</span>))<span class="question-mark">?
         </span>};
 
         <span class="kw">let </span>user = {
-            <span class="kw">let </span><span class="kw-2">mut </span>dao = <span class="self">self</span>.dao.lock().unwrap();
+            <span class="kw">let </span><span class="kw-2">mut </span>dao = <span class="self">self</span>.dao.lock().<span class="kw">await</span>;
             dao.read(<span class="kw-2">&amp;</span>challenge.user)
                 .ok_or_else(|| Status::not_found(<span class="string">&quot;User not found&quot;</span>))<span class="question-mark">?
         </span>};
@@ -430,10 +422,8 @@
         update_session(user.username.clone(), session_id.clone()); <span class="comment">// Clone session_id before moving it
         </span><span class="kw">let </span>reply = AuthenticationAnswerResponse { session_id };
 
-        {
-            <span class="kw">let </span><span class="kw-2">mut </span>dao = <span class="self">self</span>.dao.lock().unwrap();
-            dao.delete_auth_challenge(<span class="kw-2">&amp;</span>req.auth_id);
-        }
+        <span class="kw">let </span><span class="kw-2">mut </span>dao = <span class="self">self</span>.dao.lock().<span class="kw">await</span>;
+        dao.delete_auth_challenge(<span class="kw-2">&amp;</span>req.auth_id);
 
         <span class="macro">info!</span>(<span class="string">&quot;🔑 User: {} authenticated, session id: {}&quot;</span>, user.username, req.auth_id);
         <span class="macro">trace!</span>(<span class="string">&quot;verify_authentication reply: {:?}&quot;</span>, reply);
