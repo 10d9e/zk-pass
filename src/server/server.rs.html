@@ -176,6 +176,8 @@
 <a href="#176" id="176">176</a>
 <a href="#177" id="177">177</a>
 <a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>curve25519_dalek::RistrettoPoint;
 <span class="kw">use </span>num_bigint::BigUint;
 <span class="kw">use </span>pasta_curves::pallas::Point <span class="kw">as </span>PallasPoint;
@@ -185,9 +187,9 @@
 <span class="kw">use </span>strum::VariantNames;
 <span class="kw">use </span>tonic::transport::Server;
 <span class="kw">use </span>zk_pass::chaum_pedersen::curve25519::Curve25519ChaumPedersen;
-<span class="kw">use </span>zk_pass::chaum_pedersen::vesta::VestaCurveChaumPedersen;
 <span class="kw">use </span>zk_pass::chaum_pedersen::discretelog::DiscreteLogChaumPedersen;
 <span class="kw">use </span>zk_pass::chaum_pedersen::pallas::PallasCurveChaumPedersen;
+<span class="kw">use </span>zk_pass::chaum_pedersen::vesta::VestaCurveChaumPedersen;
 <span class="kw">use </span>zk_pass::chaum_pedersen::GroupParams;
 <span class="kw">use </span>zk_pass::cmdutil::{ChaumPedersenType, EllipticCurveType, RfcModpType};
 <span class="kw">use </span>zk_pass::service::zkp_auth::auth_server::AuthServer;
@@ -312,44 +314,46 @@
                 .serve(addr)
                 .<span class="kw">await</span><span class="question-mark">?</span>;
         }
-        ChaumPedersenType::EllipticCurve =&gt; <span class="kw">match </span>curve {
-            EllipticCurveType::Ec25519 =&gt; {
-                <span class="kw">let </span>params =
+        ChaumPedersenType::EllipticCurve =&gt; {
+            <span class="kw">match </span>curve {
+                EllipticCurveType::Ec25519 =&gt; {
+                    <span class="kw">let </span>params =
                     GroupParams::&lt;RistrettoPoint&gt;::from_str(<span class="kw-2">&amp;</span>curve.to_string()).map_err(|<span class="kw">_</span>| {
                         <span class="string">&quot;Invalid elliptic curve group parameters provided in command-line arguments&quot;
                             </span>.to_string()
                     })<span class="question-mark">?</span>;
-                <span class="kw">let </span>auth = ZkAuth::&lt;Curve25519ChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;::new(params);
-                Server::builder()
-                    .add_service(AuthServer::new(auth))
-                    .serve(addr)
-                    .<span class="kw">await</span><span class="question-mark">?</span>;
-            }
+                    <span class="kw">let </span>auth = ZkAuth::&lt;Curve25519ChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;::new(params);
+                    Server::builder()
+                        .add_service(AuthServer::new(auth))
+                        .serve(addr)
+                        .<span class="kw">await</span><span class="question-mark">?</span>;
+                }
 
-            EllipticCurveType::Pallas =&gt; {
-                <span class="kw">let </span>params = GroupParams::&lt;PallasPoint&gt;::from_str(<span class="kw-2">&amp;</span>curve.to_string()).map_err(|<span class="kw">_</span>| {
+                EllipticCurveType::Pallas =&gt; {
+                    <span class="kw">let </span>params = GroupParams::&lt;PallasPoint&gt;::from_str(<span class="kw-2">&amp;</span>curve.to_string()).map_err(|<span class="kw">_</span>| {
                     <span class="string">&quot;Invalid elliptic curve group parameters provided in command-line arguments&quot;
                         </span>.to_string()
                 })<span class="question-mark">?</span>;
-                <span class="kw">let </span>auth = ZkAuth::&lt;PallasCurveChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;::new(params);
-                Server::builder()
-                    .add_service(AuthServer::new(auth))
-                    .serve(addr)
-                    .<span class="kw">await</span><span class="question-mark">?</span>;
-            }
+                    <span class="kw">let </span>auth = ZkAuth::&lt;PallasCurveChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;::new(params);
+                    Server::builder()
+                        .add_service(AuthServer::new(auth))
+                        .serve(addr)
+                        .<span class="kw">await</span><span class="question-mark">?</span>;
+                }
 
-            EllipticCurveType::Vesta =&gt; {
-                <span class="kw">let </span>params = GroupParams::&lt;VestaPoint&gt;::from_str(<span class="kw-2">&amp;</span>curve.to_string()).map_err(|<span class="kw">_</span>| {
+                EllipticCurveType::Vesta =&gt; {
+                    <span class="kw">let </span>params = GroupParams::&lt;VestaPoint&gt;::from_str(<span class="kw-2">&amp;</span>curve.to_string()).map_err(|<span class="kw">_</span>| {
                     <span class="string">&quot;Invalid elliptic curve group parameters provided in command-line arguments&quot;
                         </span>.to_string()
                 })<span class="question-mark">?</span>;
-                <span class="kw">let </span>auth = ZkAuth::&lt;VestaCurveChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;::new(params);
-                Server::builder()
-                    .add_service(AuthServer::new(auth))
-                    .serve(addr)
-                    .<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="kw">let </span>auth = ZkAuth::&lt;VestaCurveChaumPedersen, <span class="kw">_</span>, <span class="kw">_</span>&gt;::new(params);
+                    Server::builder()
+                        .add_service(AuthServer::new(auth))
+                        .serve(addr)
+                        .<span class="kw">await</span><span class="question-mark">?</span>;
+                }
             }
-        },
+        }
     }
 
     <span class="prelude-val">Ok</span>(())

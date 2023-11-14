@@ -175,9 +175,9 @@
 <span class="kw">use </span>curve25519_dalek::RistrettoPoint;
 <span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>num_bigint::BigUint;
-<span class="kw">use </span>std::str::FromStr;
 <span class="kw">use </span>pasta_curves::pallas::Point <span class="kw">as </span>PallasPoint;
 <span class="kw">use </span>pasta_curves::vesta::Point <span class="kw">as </span>VestaPoint;
+<span class="kw">use </span>std::str::FromStr;
 
 <span class="comment">// RFC5114_GROUP_PARAMETERS are constant Prime Order Subgroups as defined in RFC5114
 // Reference: https://www.rfc-editor.org/rfc/rfc5114.html#section-2
@@ -341,4 +341,5 @@
             <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(()), <span class="comment">// Returning an error for unrecognized strings.
         </span>}
     }
-}</code></pre></div></section></main></body></html>
+}
+</code></pre></div></section></main></body></html>
