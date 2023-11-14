@@ -5,17 +5,17 @@
 //! responding to challenges, and verifying the correctness of the response.
 
 use crate::chaum_pedersen::{ChaumPedersen, GroupParams};
-use pasta_curves::group::ff::{FromUniformBytes, PrimeField};
+use crate::conversion::ByteConvertible;
+use crate::rand::RandomGenerator;
 use pasta_curves::group::ff::Field;
+use pasta_curves::group::ff::{FromUniformBytes, PrimeField};
+use pasta_curves::group::Group;
+use pasta_curves::group::GroupEncoding;
+use pasta_curves::vesta::Point;
+use pasta_curves::vesta::Scalar;
 use pasta_curves::Ep;
 use pasta_curves::Fp;
-use pasta_curves::vesta::Scalar;
-use pasta_curves::vesta::Point;
-use pasta_curves::group::GroupEncoding;
-use pasta_curves::group::Group;
 use rand_core::OsRng;
-use crate::rand::RandomGenerator;
-use crate::conversion::ByteConvertible;
 use std::error::Error;
 
 /// The VestaCurveChaumPedersen struct defines the specific types used in the Chaum-Pedersen protocol for the Vesta curve.
@@ -123,7 +123,7 @@ impl ByteConvertible<Point> for Point {
                 "Invalid bytes length for Scalar",
             ))
         })?;
-        
+
         Ok(Point::from_bytes(&array).unwrap())
     }
 }
@@ -171,7 +171,6 @@ impl RandomGenerator<Fp> for Fp {
     }
 }
 
-
 #[cfg(test)]
 mod test {
     //! Test module for Vesta Curve Chaum-Pedersen Protocol.
@@ -192,7 +191,6 @@ mod test {
         assert_eq!(original, recovered);
     }
 
-
     /// Test verification using standard protocol execution.
     #[test]
     fn test_elliptic_curve_standard_verification() {
@@ -200,7 +198,6 @@ mod test {
         let x = Scalar::random(&mut rng);
         let params = VESTA_GROUP_PARAMS.to_owned();
 
-     
         // Generating random points g and h on the Vesta curve.
         /*
         let g = Point::generator() * Scalar::random(&mut rng);
@@ -215,7 +212,7 @@ mod test {
             p: Point::generator(),
             q: Point::generator(),
         };
-         
+
 
         println!("g: {:?}", hex::encode(g.to_bytes()));
         println!("h: {:?}", hex::encode(h.to_bytes()));
@@ -256,6 +253,4 @@ mod test {
         let verified = VestaCurveChaumPedersen::verify(&params, &fake_response, &c, &cp);
         assert!(!verified);
     }
-
-   
 }

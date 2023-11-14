@@ -1,10 +1,10 @@
 use crate::chaum_pedersen::{ChaumPedersen, GroupParams};
+use crate::conversion::ByteConvertible;
+use crate::rand::RandomGenerator;
+use curve25519_dalek::ristretto::CompressedRistretto;
 use curve25519_dalek::scalar::Scalar;
 use curve25519_dalek::RistrettoPoint;
-use curve25519_dalek::ristretto::CompressedRistretto;
 use rand::rngs::OsRng;
-use crate::rand::RandomGenerator;
-use crate::conversion::ByteConvertible;
 use std::error::Error;
 
 /// A struct representing the Chaum-Pedersen protocol specialized for elliptic curve groups.
@@ -358,11 +358,11 @@ mod test {
         assert_eq!(original, recovered);
     }
 
-     // Test case to check for proper error handling with invalid byte length for `Scalar`.
-     #[test]
-     fn scalar_invalid_bytes_length() {
-         let bytes: Vec<u8> = vec![0; 64]; // Invalid length for Scalar conversion
-         let result = Scalar::convert_from(&bytes);
-         assert!(result.is_err());
-     }
+    // Test case to check for proper error handling with invalid byte length for `Scalar`.
+    #[test]
+    fn scalar_invalid_bytes_length() {
+        let bytes: Vec<u8> = vec![0; 64]; // Invalid length for Scalar conversion
+        let result = Scalar::convert_from(&bytes);
+        assert!(result.is_err());
+    }
 }

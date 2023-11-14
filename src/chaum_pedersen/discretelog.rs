@@ -1,9 +1,9 @@
+use crate::chaum_pedersen::{ChaumPedersen, GroupParams};
+use crate::conversion::ByteConvertible;
+use crate::rand::RandomGenerator;
 use num_bigint::{BigUint, RandBigInt};
 use num_traits::One;
 use rand::rngs::OsRng;
-use crate::chaum_pedersen::{ChaumPedersen, GroupParams};
-use crate::rand::RandomGenerator;
-use crate::conversion::ByteConvertible;
 use std::error::Error;
 
 /// A struct representing the Chaum-Pedersen protocol specialized for discrete logarithm-based groups.
@@ -161,14 +161,14 @@ mod tests {
     use crate::rand::RandomGenerator;
     use num_bigint::ToBigUint;
 
-     // Test case to ensure round-trip conversion for `BigUint`.
-     #[test]
-     fn biguint_conversion_round_trip() {
-         let original = 123456789u64.to_biguint().unwrap();
-         let bytes = BigUint::convert_to(&original);
-         let recovered = BigUint::convert_from(&bytes).unwrap();
-         assert_eq!(original, recovered);
-     }
+    // Test case to ensure round-trip conversion for `BigUint`.
+    #[test]
+    fn biguint_conversion_round_trip() {
+        let original = 123456789u64.to_biguint().unwrap();
+        let bytes = BigUint::convert_to(&original);
+        let recovered = BigUint::convert_from(&bytes).unwrap();
+        assert_eq!(original, recovered);
+    }
 
     #[test]
     fn test_discrete_log_commitment() {

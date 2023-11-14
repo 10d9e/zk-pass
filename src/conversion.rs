@@ -1,4 +1,3 @@
-
 use std::error::Error;
 
 /// A trait for converting types to and from byte representations.

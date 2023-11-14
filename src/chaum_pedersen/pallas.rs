@@ -5,15 +5,15 @@
 //! responding to challenges, and verifying the correctness of the response.
 
 use crate::chaum_pedersen::{ChaumPedersen, GroupParams};
-use pasta_curves::pallas::{Point, Scalar};
-use pasta_curves::group::GroupEncoding;
-use pasta_curves::group::ff::{FromUniformBytes, PrimeField, Field};
-use pasta_curves::group::Group;
-use pasta_curves::Fq;
-use pasta_curves::Eq;
-use rand_core::OsRng;
-use crate::rand::RandomGenerator;
 use crate::conversion::ByteConvertible;
+use crate::rand::RandomGenerator;
+use pasta_curves::group::ff::{Field, FromUniformBytes, PrimeField};
+use pasta_curves::group::Group;
+use pasta_curves::group::GroupEncoding;
+use pasta_curves::pallas::{Point, Scalar};
+use pasta_curves::Eq;
+use pasta_curves::Fq;
+use rand_core::OsRng;
 use std::error::Error;
 
 /// The PallasCurveChaumPedersen struct defines the specific types used in the Chaum-Pedersen protocol for the Pallas curve.
@@ -121,7 +121,7 @@ impl ByteConvertible<Point> for Point {
                 "Invalid bytes length for Scalar",
             ))
         })?;
-        
+
         Ok(Point::from_bytes(&array).unwrap())
     }
 }
@@ -169,8 +169,6 @@ impl RandomGenerator<Eq> for Eq {
         Ok(Eq::random(&mut OsRng))
     }
 }
-
-
 
 #[cfg(test)]
 mod test {
@@ -241,6 +239,4 @@ mod test {
         let verified = PallasCurveChaumPedersen::verify(&params, &fake_response, &c, &cp);
         assert!(!verified);
     }
-
-    
 }

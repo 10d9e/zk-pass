@@ -7,9 +7,9 @@ use structopt::StructOpt;
 use strum::VariantNames;
 use tonic::transport::Server;
 use zk_pass::chaum_pedersen::curve25519::Curve25519ChaumPedersen;
-use zk_pass::chaum_pedersen::vesta::VestaCurveChaumPedersen;
 use zk_pass::chaum_pedersen::discretelog::DiscreteLogChaumPedersen;
 use zk_pass::chaum_pedersen::pallas::PallasCurveChaumPedersen;
+use zk_pass::chaum_pedersen::vesta::VestaCurveChaumPedersen;
 use zk_pass::chaum_pedersen::GroupParams;
 use zk_pass::cmdutil::{ChaumPedersenType, EllipticCurveType, RfcModpType};
 use zk_pass::service::zkp_auth::auth_server::AuthServer;
@@ -134,44 +134,46 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .serve(addr)
                 .await?;
         }
-        ChaumPedersenType::EllipticCurve => match curve {
-            EllipticCurveType::Ec25519 => {
-                let params =
+        ChaumPedersenType::EllipticCurve => {
+            match curve {
+                EllipticCurveType::Ec25519 => {
+                    let params =
                     GroupParams::<RistrettoPoint>::from_str(&curve.to_string()).map_err(|_| {
                         "Invalid elliptic curve group parameters provided in command-line arguments"
                             .to_string()
                     })?;
-                let auth = ZkAuth::<Curve25519ChaumPedersen, _, _>::new(params);
-                Server::builder()
-                    .add_service(AuthServer::new(auth))
-                    .serve(addr)
-                    .await?;
-            }
+                    let auth = ZkAuth::<Curve25519ChaumPedersen, _, _>::new(params);
+                    Server::builder()
+                        .add_service(AuthServer::new(auth))
+                        .serve(addr)
+                        .await?;
+                }
 
-            EllipticCurveType::Pallas => {
-                let params = GroupParams::<PallasPoint>::from_str(&curve.to_string()).map_err(|_| {
+                EllipticCurveType::Pallas => {
+                    let params = GroupParams::<PallasPoint>::from_str(&curve.to_string()).map_err(|_| {
                     "Invalid elliptic curve group parameters provided in command-line arguments"
                         .to_string()
                 })?;
-                let auth = ZkAuth::<PallasCurveChaumPedersen, _, _>::new(params);
-                Server::builder()
-                    .add_service(AuthServer::new(auth))
-                    .serve(addr)
-                    .await?;
-            }
+                    let auth = ZkAuth::<PallasCurveChaumPedersen, _, _>::new(params);
+                    Server::builder()
+                        .add_service(AuthServer::new(auth))
+                        .serve(addr)
+                        .await?;
+                }
 
-            EllipticCurveType::Vesta => {
-                let params = GroupParams::<VestaPoint>::from_str(&curve.to_string()).map_err(|_| {
+                EllipticCurveType::Vesta => {
+                    let params = GroupParams::<VestaPoint>::from_str(&curve.to_string()).map_err(|_| {
                     "Invalid elliptic curve group parameters provided in command-line arguments"
                         .to_string()
                 })?;
-                let auth = ZkAuth::<VestaCurveChaumPedersen, _, _>::new(params);
-                Server::builder()
-                    .add_service(AuthServer::new(auth))
-                    .serve(addr)
-                    .await?;
+                    let auth = ZkAuth::<VestaCurveChaumPedersen, _, _>::new(params);
+                    Server::builder()
+                        .add_service(AuthServer::new(auth))
+                        .serve(addr)
+                        .await?;
+                }
             }
-        },
+        }
     }
 
     Ok(())
