@@ -1,8 +1,10 @@
 use num_bigint::{BigUint, RandBigInt};
 use num_traits::One;
 use rand::rngs::OsRng;
-
 use crate::chaum_pedersen::{ChaumPedersen, GroupParams};
+use crate::rand::RandomGenerator;
+use crate::conversion::ByteConvertible;
+use std::error::Error;
 
 /// A struct representing the Chaum-Pedersen protocol specialized for discrete logarithm-based groups.
 /// This protocol is used for demonstrating knowledge of a secret in a zero-knowledge manner.
@@ -116,6 +118,38 @@ impl ChaumPedersen for DiscreteLogChaumPedersen {
     }
 }
 
+/// Implementation of `ByteConvertible` for `BigUint`.
+///
+/// This implementation provides methods to convert `BigUint` objects to and from
+/// byte arrays, using big-endian byte order.
+impl ByteConvertible<BigUint> for BigUint {
+    fn convert_to(t: &BigUint) -> Vec<u8> {
+        t.to_bytes_be()
+    }
+
+    fn convert_from(bytes: &[u8]) -> Result<BigUint, Box<dyn Error>> {
+        Ok(BigUint::from_bytes_be(bytes))
+    }
+}
+
+// Implementation of `RandomGenerator` trait for `BigUint`.
+impl RandomGenerator<BigUint> for BigUint {
+    /// Generates a random `BigUint`.
+    ///
+    /// # Returns
+    /// A `Result` containing the random `BigUint`, or an error if the generation fails.
+    ///
+    /// # Errors
+    /// Returns an error if the conversion from bytes to `BigUint` fails.
+    fn generate_random() -> Result<BigUint, Box<dyn std::error::Error>> {
+        use rand::RngCore;
+        let mut rng = OsRng;
+        let mut bytes = [0u8; 32];
+        rng.fill_bytes(&mut bytes);
+        Ok(BigUint::from_bytes_be(&bytes))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -125,6 +159,16 @@ mod tests {
     };
     use crate::chaum_pedersen::test::test_execute_protocol;
     use crate::rand::RandomGenerator;
+    use num_bigint::ToBigUint;
+
+     // Test case to ensure round-trip conversion for `BigUint`.
+     #[test]
+     fn biguint_conversion_round_trip() {
+         let original = 123456789u64.to_biguint().unwrap();
+         let bytes = BigUint::convert_to(&original);
+         let recovered = BigUint::convert_from(&bytes).unwrap();
+         assert_eq!(original, recovered);
+     }
 
     #[test]
     fn test_discrete_log_commitment() {

@@ -1,7 +1,11 @@
 use crate::chaum_pedersen::{ChaumPedersen, GroupParams};
 use curve25519_dalek::scalar::Scalar;
 use curve25519_dalek::RistrettoPoint;
+use curve25519_dalek::ristretto::CompressedRistretto;
 use rand::rngs::OsRng;
+use crate::rand::RandomGenerator;
+use crate::conversion::ByteConvertible;
+use std::error::Error;
 
 /// A struct representing the Chaum-Pedersen protocol specialized for elliptic curve groups.
 /// This protocol is used for demonstrating knowledge of a secret in a zero-knowledge manner.
@@ -120,6 +124,76 @@ impl ChaumPedersen for Curve25519ChaumPedersen {
     }
 }
 
+/// Implementation of `ByteConvertible` for `Scalar`.
+///
+/// This implementation provides methods to convert `Scalar` objects to and from
+/// byte arrays. Scalars are fundamental in cryptographic operations and being able to
+/// serialize and deserialize them is crucial.
+impl ByteConvertible<Scalar> for Scalar {
+    fn convert_to(t: &Scalar) -> Vec<u8> {
+        t.to_bytes().to_vec()
+    }
+
+    fn convert_from(bytes: &[u8]) -> Result<Scalar, Box<dyn Error>> {
+        let array: [u8; 32] = bytes.try_into().map_err(|_| {
+            Box::new(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "Invalid bytes length for Scalar",
+            )) as Box<dyn Error>
+        })?;
+        Ok(Scalar::from_bytes_mod_order(array))
+    }
+}
+
+/// Implementation of `ByteConvertible` for `RistrettoPoint`.
+///
+/// This implementation provides methods to convert `RistrettoPoint` objects to and from
+/// byte arrays. It uses the compression and decompression features of the Ristretto group
+/// to achieve this.
+impl ByteConvertible<RistrettoPoint> for RistrettoPoint {
+    fn convert_to(t: &RistrettoPoint) -> Vec<u8> {
+        t.compress().to_bytes().to_vec()
+    }
+
+    fn convert_from(bytes: &[u8]) -> Result<RistrettoPoint, Box<dyn Error>> {
+        let compressed = CompressedRistretto::from_slice(bytes);
+        compressed?.decompress().ok_or_else(|| {
+            Box::new(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "Failed to decompress RistrettoPoint",
+            )) as Box<dyn Error>
+        })
+    }
+}
+
+// Implementation of `RandomGenerator` trait for `Scalar`.
+impl RandomGenerator<Scalar> for Scalar {
+    /// Generates a random `Scalar`.
+    ///
+    /// # Returns
+    /// A `Result` containing the random `Scalar`, or an error if the generation fails.
+    ///
+    /// # Errors
+    /// Returns an error if the conversion from bytes to `Scalar` fails.
+    fn generate_random() -> Result<Scalar, Box<dyn Error>> {
+        Ok(Scalar::random(&mut OsRng))
+    }
+}
+
+// Implementation of `RandomGenerator` trait for `RistrettoPoint`.
+impl RandomGenerator<RistrettoPoint> for RistrettoPoint {
+    /// Generates a random `RistrettoPoint`.
+    ///
+    /// # Returns
+    /// A `Result` containing the random `RistrettoPoint`, or an error if the generation fails.
+    ///
+    /// # Errors
+    /// Returns an error if the conversion from bytes to `RistrettoPoint` fails.
+    fn generate_random() -> Result<RistrettoPoint, Box<dyn std::error::Error>> {
+        Ok(RistrettoPoint::random(&mut OsRng))
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -128,6 +202,15 @@ mod test {
     use crate::rand::RandomGenerator;
     use curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
     use curve25519_dalek::ristretto::CompressedRistretto;
+
+    // Test case to ensure round-trip conversion for `RistrettoPoint`.
+    #[test]
+    fn ristretto_point_conversion_round_trip() {
+        let original = RISTRETTO_BASEPOINT_POINT * Scalar::generate_random().unwrap();
+        let bytes = RistrettoPoint::convert_to(&original);
+        let recovered = RistrettoPoint::convert_from(&bytes).unwrap();
+        assert_eq!(original, recovered);
+    }
 
     fn serialize_ristretto_point(point: &RistrettoPoint) -> String {
         // Compress the RistrettoPoint
@@ -265,4 +348,21 @@ mod test {
         // Asserting that the received point is equal to the original compressed point.
         assert_eq!(received_point, compressed_point);
     }
+
+    // Test case to ensure round-trip conversion for `Scalar`.
+    #[test]
+    fn scalar_conversion_round_trip() {
+        let original = Scalar::generate_random().unwrap();
+        let bytes = Scalar::convert_to(&original);
+        let recovered = Scalar::convert_from(&bytes).unwrap();
+        assert_eq!(original, recovered);
+    }
+
+     // Test case to check for proper error handling with invalid byte length for `Scalar`.
+     #[test]
+     fn scalar_invalid_bytes_length() {
+         let bytes: Vec<u8> = vec![0; 64]; // Invalid length for Scalar conversion
+         let result = Scalar::convert_from(&bytes);
+         assert!(result.is_err());
+     }
 }
