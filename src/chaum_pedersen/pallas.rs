@@ -5,9 +5,16 @@
 //! responding to challenges, and verifying the correctness of the response.
 
 use crate::chaum_pedersen::{ChaumPedersen, GroupParams};
-use pasta_curves::group::ff::Field;
+use crate::conversion::ByteConvertible;
+use crate::rand::RandomGenerator;
+use pasta_curves::group::ff::{Field, FromUniformBytes, PrimeField};
+use pasta_curves::group::Group;
+use pasta_curves::group::GroupEncoding;
 use pasta_curves::pallas::{Point, Scalar};
+use pasta_curves::Eq;
+use pasta_curves::Fq;
 use rand_core::OsRng;
+use std::error::Error;
 
 /// The PallasCurveChaumPedersen struct defines the specific types used in the Chaum-Pedersen protocol for the Pallas curve.
 pub struct PallasCurveChaumPedersen {}
@@ -102,6 +109,67 @@ impl ChaumPedersen for PallasCurveChaumPedersen {
     }
 }
 
+impl ByteConvertible<Point> for Point {
+    fn convert_to(t: &Point) -> Vec<u8> {
+        t.to_bytes().to_vec()
+    }
+
+    fn convert_from(bytes: &[u8]) -> Result<Point, Box<dyn Error>> {
+        let array: [u8; 32] = bytes.try_into().map_err(|_| {
+            Box::new(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "Invalid bytes length for Scalar",
+            ))
+        })?;
+
+        Ok(Point::from_bytes(&array).unwrap())
+    }
+}
+
+impl ByteConvertible<Scalar> for Scalar {
+    fn convert_to(t: &Scalar) -> Vec<u8> {
+        t.to_repr().as_slice().to_vec()
+    }
+
+    fn convert_from(bytes: &[u8]) -> Result<Scalar, Box<dyn Error>> {
+        // pad the array with zeros
+        let array = |input: &[u8]| -> [u8; 64] {
+            let mut output = [0u8; 64];
+            let len = input.len().min(64);
+            output[..len].copy_from_slice(&input[..len]);
+            output // Return the new array
+        };
+        Ok(Scalar::from_uniform_bytes(&array(bytes)))
+    }
+}
+
+// Implementation of `RandomGenerator` trait for `Fq`.
+impl RandomGenerator<Fq> for Fq {
+    /// Generates a random `Fq`.
+    ///
+    /// # Returns
+    /// A `Result` containing the random `Fq`, or an error if the generation fails.
+    ///
+    /// # Errors
+    /// Returns an error if the conversion from bytes to `Fq` fails.
+    fn generate_random() -> Result<Fq, Box<dyn std::error::Error>> {
+        Ok(Fq::random(&mut OsRng))
+    }
+}
+
+impl RandomGenerator<Eq> for Eq {
+    /// Generates a random `Fq`.
+    ///
+    /// # Returns
+    /// A `Result` containing the random `Fq`, or an error if the generation fails.
+    ///
+    /// # Errors
+    /// Returns an error if the conversion from bytes to `Fq` fails.
+    fn generate_random() -> Result<Eq, Box<dyn std::error::Error>> {
+        Ok(Eq::random(&mut OsRng))
+    }
+}
+
 #[cfg(test)]
 mod test {
     //! Test module for Pallas Curve Chaum-Pedersen Protocol.
@@ -113,6 +181,23 @@ mod test {
     use crate::chaum_pedersen::constants::PALLAS_GROUP_PARAMS;
     use crate::chaum_pedersen::test::test_execute_protocol;
     use pasta_curves::group::GroupEncoding;
+    use pasta_curves::pallas;
+
+    #[test]
+    fn pallas_point_conversion_round_trip() {
+        let original = pallas::Point::generate_random().unwrap();
+        let bytes = pallas::Point::convert_to(&original);
+        let recovered = pallas::Point::convert_from(&bytes).unwrap();
+        assert_eq!(original, recovered);
+    }
+
+    #[test]
+    fn pallas_scalar_conversion_round_trip() {
+        let original = pallas::Scalar::generate_random().unwrap();
+        let bytes = pallas::Scalar::convert_to(&original);
+        let recovered = pallas::Scalar::convert_from(&bytes).unwrap();
+        assert_eq!(original, recovered);
+    }
 
     /// Test verification using standard protocol execution.
     #[test]

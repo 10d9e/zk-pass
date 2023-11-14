@@ -3,9 +3,9 @@ use curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
 use curve25519_dalek::RistrettoPoint;
 use lazy_static::lazy_static;
 use num_bigint::BigUint;
-use std::str::FromStr;
 use pasta_curves::pallas::Point as PallasPoint;
 use pasta_curves::vesta::Point as VestaPoint;
+use std::str::FromStr;
 
 // RFC5114_GROUP_PARAMETERS are constant Prime Order Subgroups as defined in RFC5114
 // Reference: https://www.rfc-editor.org/rfc/rfc5114.html#section-2

@@ -108,7 +108,7 @@ where
             r1: None,
             r2: None,
         };
-        
+
         let mut dao = self.dao.lock().await;
         dao.create(user);
 

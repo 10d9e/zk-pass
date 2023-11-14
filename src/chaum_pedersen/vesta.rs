@@ -5,9 +5,18 @@
 //! responding to challenges, and verifying the correctness of the response.
 
 use crate::chaum_pedersen::{ChaumPedersen, GroupParams};
+use crate::conversion::ByteConvertible;
+use crate::rand::RandomGenerator;
 use pasta_curves::group::ff::Field;
-use pasta_curves::vesta::{Point, Scalar};
+use pasta_curves::group::ff::{FromUniformBytes, PrimeField};
+use pasta_curves::group::Group;
+use pasta_curves::group::GroupEncoding;
+use pasta_curves::vesta::Point;
+use pasta_curves::vesta::Scalar;
+use pasta_curves::Ep;
+use pasta_curves::Fp;
 use rand_core::OsRng;
+use std::error::Error;
 
 /// The VestaCurveChaumPedersen struct defines the specific types used in the Chaum-Pedersen protocol for the Vesta curve.
 pub struct VestaCurveChaumPedersen {}
@@ -102,6 +111,66 @@ impl ChaumPedersen for VestaCurveChaumPedersen {
     }
 }
 
+impl ByteConvertible<Point> for Point {
+    fn convert_to(t: &Point) -> Vec<u8> {
+        t.to_bytes().to_vec()
+    }
+
+    fn convert_from(bytes: &[u8]) -> Result<Point, Box<dyn Error>> {
+        let array: [u8; 32] = bytes.try_into().map_err(|_| {
+            Box::new(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "Invalid bytes length for Scalar",
+            ))
+        })?;
+
+        Ok(Point::from_bytes(&array).unwrap())
+    }
+}
+
+impl ByteConvertible<Scalar> for Scalar {
+    fn convert_to(t: &Scalar) -> Vec<u8> {
+        t.to_repr().as_slice().to_vec()
+    }
+
+    fn convert_from(bytes: &[u8]) -> Result<Scalar, Box<dyn Error>> {
+        // pad the array with zeros
+        let array = |input: &[u8]| -> [u8; 64] {
+            let mut output = [0u8; 64];
+            let len = input.len().min(64);
+            output[..len].copy_from_slice(&input[..len]);
+            output // Return the new array
+        };
+        Ok(Scalar::from_uniform_bytes(&array(bytes)))
+    }
+}
+
+impl RandomGenerator<Ep> for Ep {
+    /// Generates a random `Ep`.
+    ///
+    /// # Returns
+    /// A `Result` containing the random `Ep`, or an error if the generation fails.
+    ///
+    /// # Errors
+    /// Returns an error if the conversion from bytes to `Ep` fails.
+    fn generate_random() -> Result<Ep, Box<dyn std::error::Error>> {
+        Ok(Ep::random(&mut OsRng))
+    }
+}
+
+impl RandomGenerator<Fp> for Fp {
+    /// Generates a random `Fp`.
+    ///
+    /// # Returns
+    /// A `Result` containing the random `Fp`, or an error if the generation fails.
+    ///
+    /// # Errors
+    /// Returns an error if the conversion from bytes to `Fp` fails.
+    fn generate_random() -> Result<Fp, Box<dyn std::error::Error>> {
+        Ok(Fp::random(&mut OsRng))
+    }
+}
+
 #[cfg(test)]
 mod test {
     //! Test module for Vesta Curve Chaum-Pedersen Protocol.
@@ -114,6 +183,14 @@ mod test {
     use crate::chaum_pedersen::test::test_execute_protocol;
     use pasta_curves::group::GroupEncoding;
 
+    #[test]
+    fn vesta_point_conversion_round_trip() {
+        let original = Point::generate_random().unwrap();
+        let bytes = Point::convert_to(&original);
+        let recovered = Point::convert_from(&bytes).unwrap();
+        assert_eq!(original, recovered);
+    }
+
     /// Test verification using standard protocol execution.
     #[test]
     fn test_elliptic_curve_standard_verification() {
@@ -121,7 +198,6 @@ mod test {
         let x = Scalar::random(&mut rng);
         let params = VESTA_GROUP_PARAMS.to_owned();
 
-     
         // Generating random points g and h on the Vesta curve.
         /*
         let g = Point::generator() * Scalar::random(&mut rng);
@@ -136,7 +212,7 @@ mod test {
             p: Point::generator(),
             q: Point::generator(),
         };
-         
+
 
         println!("g: {:?}", hex::encode(g.to_bytes()));
         println!("h: {:?}", hex::encode(h.to_bytes()));
